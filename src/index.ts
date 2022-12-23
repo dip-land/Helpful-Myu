@@ -4,7 +4,7 @@ import 'dotenv/config';
 import { exec } from 'child_process';
 import { platform } from 'os';
 export const beta = platform() === 'win32';
-export const token = beta ? (process.env.BETATOKEN as string) : (process.env.HMTOKEN as string);
+export const token = beta ? (process.env.BETATOKEN as string) : (process.env.TOKEN as string);
 
 import glob from 'glob';
 import type { Command } from './structures/command.js';

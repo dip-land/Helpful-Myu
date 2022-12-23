@@ -8,7 +8,6 @@ export default new Event({
 	async fn(ban: GuildBan) {
 		const channels = [
 			{ guild: '632717913169854495', channel: '1005657796802519192' },
-			{ guild: '1054430033097277461', channel: '1054430038197534856' },
 			{ guild: '981639333549322262', channel: '1003983050692116550' },
 		];
 		const channelID = channels.find(({ guild }) => guild === ban.guild.id)?.channel as string;

@@ -24,7 +24,6 @@ export default new Event({
 		if (!prefixes[0]) prefixes.push('hm!');
 		const prefix = prefixes.find((p) => message.content.startsWith(p));
 		if (prefix === undefined) return;
-		if (!beta && message.guildId !== '632717913169854495') return;
 		prefixCommand(message, prefix, message.client);
 	},
 });
