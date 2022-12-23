@@ -1,0 +1,73 @@
+client.on('messageCreate', async (message) => {
+	if (message.author.id !== '439039443744063488') return;
+	if (message.content.startsWith('!@Prune')) {
+		const number = message.content.slice(7).trim().split(/ +/)[0];
+		if (!message.channel.isTextBased()) return;
+		if (message.channel.isDMBased()) return;
+		message.channel.bulkDelete(parseInt(number), true);
+	}
+	if (message.content === '!@Start') {
+		const from = '870772556343443556';
+		const to = '1054430039233536072';
+		const channel = (await client.channels.fetch(from)) as Channel;
+		if (!channel.isTextBased()) return;
+		const messages: Array<Message> = [];
+		const finalMessages: Array<string> = [];
+		const msg = (await channel.messages.fetch({ limit: 1 }).then((messagePage) => (messagePage.size === 1 ? messagePage.at(0) : null))) as Message;
+		let message = await channel.messages.fetch({ limit: 1 }).then((messagePage) => (messagePage.size === 1 ? messagePage.at(0) : null));
+
+		while (message) {
+			await channel.messages.fetch({ limit: 100, before: message.id }).then((messagePage) => {
+				messagePage.forEach((msg) => messages.push(msg));
+				message = 0 < messagePage.size ? messagePage.at(messagePage.size - 1) : null;
+			});
+		}
+		messages.reverse();
+		for (const message of messages) {
+			for (const attachment of message.attachments) {
+				finalMessages.push(attachment[1].url);
+				console.log('a', attachment[1].url);
+			}
+			for (const content of message.content.split(' ')) {
+				if (content.startsWith('http')) {
+					const data = await fetch(content, { method: 'HEAD' }).catch((e) => {});
+					if (data) {
+						finalMessages.push(content);
+						console.log('c', content);
+					}
+				}
+			}
+		}
+		for (const attachment of msg.attachments) {
+			finalMessages.push(attachment[1].url);
+			console.log('a', attachment[1].url);
+		}
+		for (const content of msg.content.split(' ')) {
+			if (content.startsWith('http')) {
+				const data = await fetch(content, { method: 'HEAD' }).catch((e) => {});
+				if (data) {
+					finalMessages.push(content);
+					console.log('c', content);
+				}
+			}
+		}
+		console.log(finalMessages.length);
+
+		for (const link in finalMessages) {
+			setTimeout(async () => {
+				let send: any = finalMessages[link];
+
+				if (finalMessages[link].startsWith('https://cdn.discordapp') || finalMessages[link].startsWith('https://media.discordapp')) {
+					try {
+						send = { files: [new AttachmentBuilder(Buffer.from(await (await fetch(finalMessages[link])).arrayBuffer()), { name: `${Date.now()}${finalMessages[link].slice(-6)}` })] };
+					} catch (e) {}
+					const channel = (await client.channels.fetch(to)) as Channel;
+					if (!channel.isTextBased()) return;
+					const a = (await channel.send(send).catch((e) => {})) as Message;
+					if (a?.id) a.react('<a:akafeheart:1009602965616726026>').catch((e) => {});
+				}
+				console.log(`${parseInt(link) + 1}/${finalMessages.length}`);
+			}, (parseInt(link) + 1) * 1200);
+		}
+	}
+});
