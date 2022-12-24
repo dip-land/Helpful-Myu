@@ -1,6 +1,6 @@
 {
   "name": "helpful-myu",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "",
   "main": "dist/index.js",
   "author": "",
@@ -14,6 +14,7 @@
     "dotenv": "^16.0.3",
     "ffmpeg-static": "^5.1.0",
     "glob": "^8.0.3",
+    "mongodb": "^4.13.0",
     "play-dl": "^1.9.6",
     "sequelize": "^6.25.7",
     "sodium-native": "^3.4.1",
