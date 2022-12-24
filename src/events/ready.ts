@@ -14,7 +14,6 @@ export default new Event({
 			client.rest.put(Routes.applicationGuildCommands('996196343120928859', '981639333549322262'), { body: commands }).catch(console.error);
 		} else {
 			client.rest.put(Routes.applicationCommands('995370187626905611'), { body: commands }).catch(console.error);
-			client.rest.put(Routes.applicationCommands('1055960319161282630'), { body: commands }).catch(console.error);
 		}
 	},
 });
