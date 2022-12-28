@@ -1,22 +1,22 @@
 {
 	"env": {
-		"es2021": true,
 		"node": true
 	},
 	"extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "prettier", "plugin:prettier/recommended"],
 	"parser": "@typescript-eslint/parser",
 	"parserOptions": {
-		"ecmaVersion": 12,
+		"ecmaVersion": "latest",
 		"sourceType": "module"
 	},
 	"plugins": ["@typescript-eslint"],
 	"rules": {
+		"strict": 2,
 		"no-empty-function": "off",
 		"@typescript-eslint/no-empty-function": "off",
 		"no-unused-vars": "off",
 		"@typescript-eslint/no-unused-vars": "off",
 		"@typescript-eslint/no-explicit-any": 0,
-		"indent": ["error", "tab", { "SwitchCase": 1 }],
+		"indent": ["error", 4, { "SwitchCase": 1 }],
 		"linebreak-style": ["error", "unix"],
 		"quotes": [
 			"error",
@@ -37,10 +37,10 @@
 			"error",
 			{
 				"singleQuote": true,
-				"printWidth": 210,
+				"printWidth": 180,
 				"quoteProps": "as-needed",
 				"endOfLine": "lf",
-				"useTabs": true
+				"tabWidth": 4
 			}
 		],
 		"no-duplicate-imports": "error"

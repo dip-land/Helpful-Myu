@@ -6,13 +6,13 @@ import type { Interaction } from 'discord.js';
 import { Event } from '../structures/event.js';
 
 export default new Event({
-	name: 'interactionCreate',
-	on: true,
-	async fn(interaction: Interaction) {
-		if (!interaction?.id) return;
-		if (interaction.isButton()) return button(interaction);
-		if (interaction.isChatInputCommand()) return command(interaction);
-		//if (interaction.isModalSubmit()) return modal(interaction);
-		if (interaction.isAnySelectMenu()) return selectMenu(interaction);
-	},
+    name: 'interactionCreate',
+    on: true,
+    async fn(interaction: Interaction) {
+        if (!interaction?.id) return;
+        if (interaction.isButton()) return button(interaction);
+        if (interaction.isChatInputCommand()) return command(interaction);
+        //if (interaction.isModalSubmit()) return modal(interaction);
+        if (interaction.isAnySelectMenu()) return selectMenu(interaction);
+    },
 });

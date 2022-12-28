@@ -1,11 +1,14 @@
 {
   "name": "helpful-myu",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "",
   "main": "dist/index.js",
   "author": "",
   "license": "MIT",
   "type": "module",
+  "scripts": {
+    "lint": "eslint --fix --ext .ts src"
+  },
   "dependencies": {
     "@discordjs/opus": "^0.9.0",
     "@discordjs/voice": "^0.14.0",
@@ -29,6 +32,6 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "tslib": "^2.4.1",
-    "typescript": "^5.0.0-dev.20221204"
+    "typescript": "^5.0.0-dev.20221227"
   }
 }
