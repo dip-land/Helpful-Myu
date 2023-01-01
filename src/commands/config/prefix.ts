@@ -1,6 +1,7 @@
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Command } from '../../structures/command.js';
 import { Config, type ConfigInterface } from '../../handlers/database/mongo.js';
+import { fetchPrefixes } from '../../events/messageCreate.js';
 
 export default new Command({
     name: 'prefix',
@@ -76,5 +77,6 @@ export default new Command({
             }
             interaction.editReply(`Here is a list of all the prefixes \`\`\`${prefixes.join('``````')}\`\`\``);
         }
+        fetchPrefixes();
     },
 });

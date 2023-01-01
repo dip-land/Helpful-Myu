@@ -1,9 +1,14 @@
 import type { Message } from 'discord.js';
 import prefixCommand from '../handlers/prefixCommand.js';
-import { beta } from '../index.js';
 import { Config } from '../handlers/database/mongo.js';
 import messageFilter from '../handlers/messageFilter.js';
 import { Event } from '../structures/event.js';
+
+let prefixes = await Config.find({ type: 'prefix' }).toArray();
+export async function fetchPrefixes() {
+    prefixes = await Config.find({ type: 'prefix' }).toArray();
+    console.log('Prefixes Updated.');
+}
 
 export default new Event({
     name: 'messageCreate',
@@ -14,13 +19,8 @@ export default new Event({
         if (message.content.toLowerCase().includes('stfu')) message.channel.send('slice the fudge, uwuu~ <3');
         messageFilter(message);
 
-        const prefixes = beta ? [] : ['.', '<@995370187626905611>'];
-        const configPrefixes = beta ? await Config.find({ type: 'prefix' }).toArray() : [];
-        for (const prefix of configPrefixes) {
-            prefixes.push(prefix.data as string);
-        }
-        if (!prefixes[0]) prefixes.push('hm!');
-        const prefix = prefixes.find((p) => message.content.startsWith(p));
+        if (!prefixes[0]) prefixes.push({ _id: null, type: 'prefix', data: 'hm!' });
+        const prefix = prefixes.find((p) => message.content.startsWith(p.data as string))?.data as string;
         if (prefix === undefined) return;
         prefixCommand(message, prefix, message.client);
     },

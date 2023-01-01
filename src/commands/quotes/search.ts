@@ -117,7 +117,7 @@ async function makeEmbed(quote: QuoteInterface, user: User, client: Client): Pro
         }
     }
     return {
-        color: 0xfab6ec,
+        color: 0xafbbea,
         title: `Quote ${quote.id}`,
         description: `**Keyword:** ${quote.keyword}\n**Text:** ${quote.text}\n**Created By:** ${createdBy.tag} (${createdBy.id}) <t:${Math.floor(
             quote.createdAt.getTime() / 1000

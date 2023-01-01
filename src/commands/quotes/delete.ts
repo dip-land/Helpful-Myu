@@ -30,7 +30,7 @@ export default new Command({
             interaction.editReply({
                 embeds: [
                     {
-                        color: 0xfab6ec,
+                        color: 0xafbbea,
                         title: 'Do you wanna compost this quote, myaa?',
                         description: `**ID:** ${quote.id}\n**Keyword:** ${quote.keyword}\n**Text:** ${quote.text}\n**Created By:** ${createdBy.tag} (${
                             createdBy.id
@@ -77,7 +77,7 @@ export default new Command({
         message.reply({
             embeds: [
                 {
-                    color: 0xfab6ec,
+                    color: 0xafbbea,
                     title: 'Do you wanna compost this quote, myaa?',
                     description: `**ID:** ${quote.id}\n**Keyword:** ${quote.keyword}\n**Text:** ${quote.text}\n**Created By:** ${createdBy.tag} (${
                         createdBy.id

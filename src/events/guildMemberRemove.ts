@@ -10,8 +10,7 @@ export default new Event({
             { guild: '632717913169854495', channel: '1005657796802519192' },
             { guild: '981639333549322262', channel: '1003983050692116550' },
         ];
-        const channelID = channels.find(({ guild }) => guild === member.guild.id)?.channel as string;
-        const sendChannel = await client.channels.fetch(channelID);
+        const sendChannel = await client.channels.fetch(channels.find(({ guild }) => guild === member.guild.id)?.channel as string);
         if (sendChannel?.type !== 0) return;
         const created = Math.round(member.user.createdTimestamp / 1000);
         const left = Math.round(Date.now() / 1000);

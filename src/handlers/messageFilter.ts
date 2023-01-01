@@ -52,7 +52,7 @@ export default async (message: Message<boolean>) => {
             ) {
                 checks.push(1);
             } else if (content.startsWith('http')) {
-                const data = await fetch(content, { method: 'HEAD' }).catch((e) => {});
+                const data = await fetch(content, { method: 'HEAD' }).catch((err: Error) => {});
                 if (data) {
                     const type = data.headers.get('content-type');
                     if (type?.match(/video\/|image\//g)) checks.push(1);
@@ -66,25 +66,11 @@ export default async (message: Message<boolean>) => {
             if (counter.count >= channel.t) {
                 message.channel.send(channel.msgs[Math.floor(Math.random() * channel.msgs.length)]).then((msg) => {
                     setTimeout(() => {
-                        msg.delete().catch(() =>
-                            setTimeout(() => {
-                                msg.delete().catch(() =>
-                                    setTimeout(() => {
-                                        msg.delete().catch((e) => console.log(e));
-                                    }, 60000 * 2)
-                                );
-                            }, 60000)
-                        );
+                        msg.delete().catch((err: Error) => {});
                     }, 30000);
                 });
                 if (channel.d && message.deletable) {
-                    message.delete().catch((e) => {
-                        setTimeout(() => {
-                            message.delete().catch((e) => {
-                                console.log('error deleting message:', e);
-                            });
-                        }, 10000);
-                    });
+                    message.delete().catch((err: Error) => {});
                 }
             }
         }
@@ -96,6 +82,6 @@ function finish(message: Message<boolean>, channel: Channels[0]) {
     if (!message?.id) return;
     Counter.findOneAndUpdate({ id: message.channelId }, { $set: { count: 0 } });
     for (const emoji of channel.emojis) {
-        message.react(emoji).catch((e: Error) => console.log('error reacting to a message'));
+        message.react(emoji).catch((err: Error) => console.log('error reacting to a message'));
     }
 }
