@@ -18,14 +18,3 @@ export type CommandFileExtendedData = {
     disabled?: boolean;
     permissions?: Array<PermissionResolvable>;
 };
-
-export type channelConfigData = {
-    emojis: Array<string>;
-    allowedURLs: Array<string>;
-    attachmentOnlyMode: boolean;
-    maxMessages: number;
-    messages: Array<string>;
-    deleteAtMax: boolean;
-    bypassUsersImage: Array<string>;
-    bypassUsersMaxMessages: Array<string>;
-};

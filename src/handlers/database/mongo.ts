@@ -4,7 +4,8 @@ import { beta, client, mongoClient } from '../../index.js';
 import importData from './import.js';
 
 await mongoClient.connect();
-const database = mongoClient.db(beta ? 'HB' : 'HM');
+mongoClient.on('connectionReady', () => console.log('Database Online'));
+const database = mongoClient.db(beta ? 'MB' : 'HM');
 
 glob('./data/imports/*.json', async (err: Error | null, paths: Array<string>) => {
     for (const path of paths) {
@@ -23,9 +24,10 @@ export interface ConfigInterface {
 export interface ChannelConfigInterface {
     channel: string;
     emojis: Array<string>;
-    msgs: Array<string>;
-    t: number;
-    d: boolean;
+    messages: Array<string>;
+    allowedUrls: Array<string>;
+    maxMessages: number;
+    deleteAtMax: boolean;
 }
 
 export const Counter: Collection<CounterInterface> = database.collection('Counters');

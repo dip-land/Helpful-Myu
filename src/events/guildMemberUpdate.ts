@@ -5,6 +5,7 @@ export default new Event({
     name: 'guildMemberUpdate',
     on: true,
     async fn(member: GuildMember, oldMember: GuildMember) {
-        if (oldMember.premiumSinceTimestamp !== member.premiumSinceTimestamp) console.log(member.premiumSinceTimestamp, oldMember.premiumSinceTimestamp, 'user boosted? triggered');
+        console.log('member updated');
+        //if (oldMember.premiumSinceTimestamp !== member.premiumSinceTimestamp) console.log(member.premiumSinceTimestamp, oldMember.premiumSinceTimestamp, 'user boosted? triggered');
     },
 });

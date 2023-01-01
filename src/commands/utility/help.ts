@@ -24,7 +24,7 @@ export default new Command({
             interaction.editReply({
                 embeds: [
                     {
-                        color: 0xfab6ec,
+                        color: 0xafbbea,
                         title: 'Help',
                         description: makeDefaultText(interaction.client, true),
                         timestamp: new Date().toISOString(),
@@ -46,7 +46,7 @@ export default new Command({
             message.reply({
                 embeds: [
                     {
-                        color: 0xfab6ec,
+                        color: 0xafbbea,
                         title: 'Help',
                         description: makeDefaultText(message.client, false),
                         timestamp: new Date().toISOString(),
@@ -68,7 +68,6 @@ export default new Command({
 function makeDefaultText(client: Client, slash: boolean, error?: boolean) {
     const text: Array<string> = [];
     const config: Array<string> = [];
-    const music: Array<string> = [];
     const quotes: Array<string> = [];
     const utility: Array<string> = [];
     const commands = client.legacyCommands;
@@ -77,9 +76,6 @@ function makeDefaultText(client: Client, slash: boolean, error?: boolean) {
         if (cmdObj.category === 'config' && !config.includes(cmdObj.name)) {
             config.push(cmdObj.name);
             if (cmdObj.aliases[0]) config.push(cmdObj.aliases.join(', '));
-        } else if (cmdObj.category === 'music' && !music.includes(cmdObj.name)) {
-            music.push(cmdObj.name);
-            if (cmdObj.aliases[0]) music.push(cmdObj.aliases.join(', '));
         } else if (cmdObj.category === 'quotes' && !quotes.includes(cmdObj.name)) {
             quotes.push(cmdObj.name);
             if (cmdObj.aliases[0]) quotes.push(cmdObj.aliases.join(', '));
@@ -90,8 +86,8 @@ function makeDefaultText(client: Client, slash: boolean, error?: boolean) {
     }
     if (error) text.push("The Command that you tried to search for doesn't exist.");
     text.push('**Here are all the different commands.');
-    text.push(`\n\nConfig:** ${config.join(', ')}\n**Music:** ${music.join(', ')}\n**Quotes:** ${quotes.join(', ')}\n**Utility:** ${utility.join(', ')}\n\n`);
-    text.push(`**To see the details of a specific command type \`${slash === true ? '/help query:[command name]' : '.help [command name]'}\`**`);
+    text.push(`\n\nConfig:** ${config.join(', ')}\n**Quotes:** ${quotes.join(', ')}\n**Utility:** ${utility.join(', ')}\n\n`);
+    //text.push(`**To see the details of a specific command type \`${slash === true ? '/help query:[command name]' : '.help [command name]'}\`**`);
     return text.join(' ');
 }
 
@@ -99,7 +95,7 @@ function makeCommandEmbed(query: string, client: Client, user: User) {
     const command = client.legacyCommands.find((command) => command.commandObject.name === query || command.commandObject.aliases.includes(query));
     if (!command?.commandObject) {
         return {
-            color: 0xfab6ec,
+            color: 0xafbbea,
             title: 'Help',
             description: makeDefaultText(client, false, true),
             timestamp: new Date().toISOString(),
@@ -110,9 +106,9 @@ function makeCommandEmbed(query: string, client: Client, user: User) {
         };
     }
     return {
-        color: 0xfab6ec,
+        color: 0xafbbea,
         title: command.commandObject.name,
-        description: 'This bit of the command is still a work in progress!!',
+        description: 'WIP',
         timestamp: new Date().toISOString(),
         footer: {
             text: `Requested by ${user.tag}`,
