@@ -1,4 +1,4 @@
-import type { GuildMember } from 'discord.js';
+import type { Guild, GuildMember } from 'discord.js';
 import { Command } from '../../structures/command.js';
 
 export default new Command({
@@ -99,7 +99,8 @@ export default new Command({
         });
     },
     async prefixCommand(message, args) {
-        const user = args[0] ? await message.client.users.fetch(args[0].replace('<@', '').replace('>', '')) : message.author;
+        let user = args[0] ? await message.client.users.fetch(args[0].replace('<@', '').replace('>', ''), { force: true }).catch((e) => {}) : await message.author.fetch(true);
+        if (user === void 0) user = (await message.guild?.members.fetch({ query: args.join(' '), limit: 1 }))?.first()?.user || message.author;
         const member = await (await message.client.guilds.fetch(message?.guildId as string)).members.fetch(user.id);
         const hasServerAvatar = user.displayAvatarURL() !== member.displayAvatarURL();
         const avatar = user.displayAvatarURL({ size: 2048 });

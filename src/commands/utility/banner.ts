@@ -47,7 +47,8 @@ export default new Command({
         });
     },
     async prefixCommand(message, args) {
-        const user = args[0] ? await message.client.users.fetch(args[0].replace('<@', '').replace('>', ''), { force: true }) : await message.author.fetch(true);
+        let user = args[0] ? await message.client.users.fetch(args[0].replace('<@', '').replace('>', ''), { force: true }).catch((e) => {}) : await message.author.fetch(true);
+        if (user === void 0) user = (await message.guild?.members.fetch({ query: args.join(' '), limit: 1 }))?.first()?.user || message.author;
         const banner = user.bannerURL({ size: 2048 });
         if (!banner) return message.reply('User does not have a banner!!');
 
