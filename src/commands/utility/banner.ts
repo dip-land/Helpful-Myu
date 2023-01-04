@@ -29,11 +29,11 @@ export default new Command({
                     color: 0xafbbea,
                     title: user.tag + ' Banner',
                     description:
-                        `**[Global Banner URL](${banner})**` +
-                        `\n[JPG URL](${user.bannerURL({ size: 2048, extension: 'jpg', forceStatic: true })})` +
-                        ` | [PNG URL](${user.bannerURL({ size: 2048, extension: 'png', forceStatic: true })})` +
-                        ` | [WEBP URL](${user.bannerURL({ size: 2048, extension: 'webp', forceStatic: true })})` +
-                        `${(banner as string).includes('.gif') ? ` | [GIF URL](${user.bannerURL({ size: 2048, extension: 'gif' })})` : ''}`,
+                        `**[Global Banner](${banner})**` +
+                        `\n[JPG](${user.bannerURL({ size: 2048, extension: 'jpg', forceStatic: true })})` +
+                        ` | [PNG](${user.bannerURL({ size: 2048, extension: 'png', forceStatic: true })})` +
+                        ` | [WEBP](${user.bannerURL({ size: 2048, extension: 'webp', forceStatic: true })})` +
+                        `${(banner as string).includes('.gif') ? ` | [GIF](${user.bannerURL({ size: 2048, extension: 'gif' })})` : ''}`,
                     image: {
                         url: banner as string,
                     },
@@ -58,11 +58,11 @@ export default new Command({
                     color: 0xafbbea,
                     title: user.tag + ' Banner',
                     description:
-                        `**[Global Banner URL](${banner})**` +
-                        `\n[JPG URL](${user.bannerURL({ size: 2048, extension: 'jpg', forceStatic: true })})` +
-                        ` | [PNG URL](${user.bannerURL({ size: 2048, extension: 'png', forceStatic: true })})` +
-                        ` | [WEBP URL](${user.bannerURL({ size: 2048, extension: 'webp', forceStatic: true })})` +
-                        `${(banner as string).includes('.gif') ? ` | [GIF URL](${user.bannerURL({ size: 2048, extension: 'gif' })})` : ''}`,
+                        `**[Global Banner](${banner})**` +
+                        `\n[JPG](${user.bannerURL({ size: 2048, extension: 'jpg', forceStatic: true })})` +
+                        ` | [PNG](${user.bannerURL({ size: 2048, extension: 'png', forceStatic: true })})` +
+                        ` | [WEBP](${user.bannerURL({ size: 2048, extension: 'webp', forceStatic: true })})` +
+                        `${(banner as string).includes('.gif') ? ` | [GIF](${user.bannerURL({ size: 2048, extension: 'gif' })})` : ''}`,
                     image: {
                         url: banner as string,
                     },
