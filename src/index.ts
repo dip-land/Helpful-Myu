@@ -45,15 +45,17 @@ glob('./dist/commands/**/*.js', async (err: Error | null, paths: Array<string>) 
             console.log(err);
         }
     }
+    if (client.isReady()) {
+        if (beta) {
+            client.rest.put(Routes.applicationGuildCommands('996196343120928859', '981639333549322262'), { body: commands }).catch(console.error);
+        } else {
+            client.rest.put(Routes.applicationCommands('995370187626905611'), { body: commands }).catch(console.error);
+        }
+    }
 });
 
 client.once('ready', () => {
     console.log(client.user?.username, 'online.');
-    if (beta) {
-        client.rest.put(Routes.applicationGuildCommands('996196343120928859', '981639333549322262'), { body: commands }).catch(console.error);
-    } else {
-        client.rest.put(Routes.applicationCommands('995370187626905611'), { body: commands }).catch(console.error);
-    }
 });
 
 client.login(token);
