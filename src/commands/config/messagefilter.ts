@@ -150,6 +150,7 @@ export default new Command({
     ],
     aliases: ['mf'],
     category: 'config',
+    default_member_permissions: '8',
     permissions: ['Administrator'],
     disabled: true,
     async slashCommand(interaction, options) {

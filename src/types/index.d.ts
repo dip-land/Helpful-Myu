@@ -16,5 +16,6 @@ export type CommandFileExtendedData = {
     category: string;
     cooldown?: number;
     disabled?: boolean;
+    default_member_permissions?: string;
     permissions?: Array<PermissionResolvable>;
 };

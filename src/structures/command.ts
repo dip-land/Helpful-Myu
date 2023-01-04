@@ -17,6 +17,7 @@ export class Command {
     #category = '';
     #cooldown?: number = 5;
     #disabled?: boolean = false;
+    #default_member_permissions?: string;
     #permissions?: Array<PermissionResolvable> = [];
     #prefixCommand?: (message: Message, args: Array<string>) => Promise<unknown>;
     #slashCommand?: (interaction: CommandInteraction, options: readonly CommandInteractionOption<CacheType>[]) => Promise<unknown>;
@@ -30,6 +31,7 @@ export class Command {
         this.#category = options.category;
         this.#cooldown = options.cooldown;
         this.#disabled = options.disabled;
+        this.#default_member_permissions = options.default_member_permissions;
         this.#permissions = options.permissions;
         this.#prefixCommand = options.prefixCommand;
         this.#slashCommand = options.slashCommand;
@@ -42,6 +44,7 @@ export class Command {
             name: this.#name,
             description: this.#description,
             options: this.#options,
+            default_member_permissions: this.#default_member_permissions,
         };
     }
 
@@ -84,6 +87,7 @@ export class CommandOptions {
     category = '';
     cooldown?: number = 5;
     disabled?: boolean = false;
+    default_member_permissions? = '';
     permissions?: Array<PermissionResolvable> = [];
     prefixCommand?: (message: Message, args: Array<string>) => Promise<unknown>;
     slashCommand?: (interaction: CommandInteraction, options: readonly CommandInteractionOption<CacheType>[]) => Promise<unknown>;
@@ -95,6 +99,7 @@ export class ApplicationData {
     name!: string;
     description!: string;
     options: ChatInputApplicationCommandData['options'];
+    default_member_permissions!: string | undefined;
 }
 
 export class CommandObject {
@@ -105,6 +110,7 @@ export class CommandObject {
     category!: string;
     cooldown?: number;
     disabled?: boolean;
+    default_member_permissions?: string;
     permissions?: Array<PermissionResolvable>;
     prefixCommand?: (message: Message, args: Array<string>) => Promise<unknown>;
     slashCommand?: (interaction: CommandInteraction, options: readonly CommandInteractionOption<CacheType>[]) => Promise<unknown>;

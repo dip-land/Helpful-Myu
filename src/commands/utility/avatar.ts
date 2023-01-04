@@ -81,11 +81,11 @@ export default new Command({
                     color: 0xafbbea,
                     title: user.tag + ' Avatar',
                     description:
-                        `${server ? `**[Server Avatar URL](${avatar})**` : `**[Global Avatar URL](${avatar})**`}` +
-                        `\n[JPG URL](${person.displayAvatarURL({ size: 2048, extension: 'jpg', forceStatic: true })})` +
-                        ` | [PNG URL](${person.displayAvatarURL({ size: 2048, extension: 'png', forceStatic: true })})` +
-                        ` | [WEBP URL](${person.displayAvatarURL({ size: 2048, extension: 'webp', forceStatic: true })})` +
-                        `${avatar.includes('.gif') ? ` | [GIF URL](${person.displayAvatarURL({ size: 2048, extension: 'gif' })})` : ''}`,
+                        `${server ? `**[Server Avatar](${avatar})**` : `**[Global Avatar](${avatar})**`}` +
+                        `\n[JPG](${person.displayAvatarURL({ size: 2048, extension: 'jpg', forceStatic: true })})` +
+                        ` | [PNG](${person.displayAvatarURL({ size: 2048, extension: 'png', forceStatic: true })})` +
+                        ` | [WEBP](${person.displayAvatarURL({ size: 2048, extension: 'webp', forceStatic: true })})` +
+                        `${avatar.includes('.gif') ? ` | [GIF](${person.displayAvatarURL({ size: 2048, extension: 'gif' })})` : ''}`,
                     image: {
                         url: avatar,
                     },
@@ -124,11 +124,11 @@ export default new Command({
                     color: 0xafbbea,
                     title: user.tag + ' Avatar',
                     description:
-                        `**[Global Avatar URL](${avatar})**` +
-                        `\n[JPG URL](${user.displayAvatarURL({ size: 2048, extension: 'jpg', forceStatic: true })})` +
-                        ` | [PNG URL](${user.displayAvatarURL({ size: 2048, extension: 'png', forceStatic: true })})` +
-                        ` | [WEBP URL](${user.displayAvatarURL({ size: 2048, extension: 'webp', forceStatic: true })})` +
-                        `${avatar.includes('.gif') ? ` | [GIF URL](${user.displayAvatarURL({ size: 2048, extension: 'gif' })})` : ''}`,
+                        `**[Global Avatar](${avatar})**` +
+                        `\n[JPG](${user.displayAvatarURL({ size: 2048, extension: 'jpg', forceStatic: true })})` +
+                        ` | [PNG](${user.displayAvatarURL({ size: 2048, extension: 'png', forceStatic: true })})` +
+                        ` | [WEBP](${user.displayAvatarURL({ size: 2048, extension: 'webp', forceStatic: true })})` +
+                        `${avatar.includes('.gif') ? ` | [GIF](${user.displayAvatarURL({ size: 2048, extension: 'gif' })})` : ''}`,
                     image: {
                         url: avatar,
                     },
@@ -155,11 +155,11 @@ export default new Command({
                     color: 0xafbbea,
                     title: user.tag + ' Avatar',
                     description:
-                        `${global ? `**[Global Avatar URL](${avatar})**` : `**[Server Avatar URL](${avatar})**`}` +
-                        `\n[JPG URL](${person.displayAvatarURL({ size: 2048, extension: 'jpg', forceStatic: true })})` +
-                        ` | [PNG URL](${person.displayAvatarURL({ size: 2048, extension: 'png', forceStatic: true })})` +
-                        ` | [WEBP URL](${person.displayAvatarURL({ size: 2048, extension: 'webp', forceStatic: true })})` +
-                        `${avatar.includes('.gif') ? ` | [GIF URL](${person.displayAvatarURL({ size: 2048, extension: 'gif' })})` : ''}`,
+                        `${global ? `**[Global Avatar](${avatar})**` : `**[Server Avatar](${avatar})**`}` +
+                        `\n[JPG](${person.displayAvatarURL({ size: 2048, extension: 'jpg', forceStatic: true })})` +
+                        ` | [PNG](${person.displayAvatarURL({ size: 2048, extension: 'png', forceStatic: true })})` +
+                        ` | [WEBP](${person.displayAvatarURL({ size: 2048, extension: 'webp', forceStatic: true })})` +
+                        `${avatar.includes('.gif') ? ` | [GIF](${person.displayAvatarURL({ size: 2048, extension: 'gif' })})` : ''}`,
                     image: {
                         url: avatar,
                     },
