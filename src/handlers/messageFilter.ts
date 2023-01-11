@@ -7,7 +7,7 @@ const channels: Channels = [
     { channel: '690972955080917085', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: ["❕>w< w-where's the cute~?? Post more cute~!"], t: 8, d: false }, //KK_tea-room
     { channel: '1054475329776926830', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: ["❕>w< w-where's the cute~?? Post more cute~!"], t: 10, d: false }, //KK_extra-cute
     { channel: '1054471487119179886', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: ["❕>w< w-where's the cute~?? Post more cute~!"], t: 10, d: false }, //KK_super-cute
-    { channel: '995368611822706708', emojis: ['💖'], msgs: ['>:('], t: 0, d: true }, //SB_msgblocktest
+    { channel: '1062537412225544204', emojis: ['💖'], msgs: ['>:('], t: 0, d: true }, //SB_msgblocktest
     {
         channel: '960560813637255189',
         emojis: [
@@ -21,18 +21,18 @@ const channels: Channels = [
         t: 0,
         d: true,
     }, //KK_memes-only
-    { channel: '1054502394026799225', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: ["❕>w< w-where's the cute~?? Post more cute~!"], t: 9999, d: false }, //KK_nekopara_Shigure
-    { channel: '1054499211187585105', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: ["❕>w< w-where's the cute~?? Post more cute~!"], t: 9999, d: false }, //KK_nekopara_Maple
-    { channel: '1054501266757255169', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: ["❕>w< w-where's the cute~?? Post more cute~!"], t: 9999, d: false }, //KK_nekopara_Cinnamon
-    { channel: '1054497066392494161', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: ["❕>w< w-where's the cute~?? Post more cute~!"], t: 9999, d: false }, //KK_nekopara_Vanilla
-    { channel: '1054498770257195148', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: ["❕>w< w-where's the cute~?? Post more cute~!"], t: 9999, d: false }, //KK_nekopara_Azuki
-    { channel: '1054497493066453062', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: ["❕>w< w-where's the cute~?? Post more cute~!"], t: 9999, d: false }, //KK_nekopara_Chocola
-    { channel: '1054499677954912327', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: ["❕>w< w-where's the cute~?? Post more cute~!"], t: 9999, d: false }, //KK_nekopara_Coconut
+    { channel: '1054502394026799225', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: [], t: 9999, d: false }, //KK_nekopara_Shigure
+    { channel: '1054499211187585105', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: [], t: 9999, d: false }, //KK_nekopara_Maple
+    { channel: '1054501266757255169', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: [], t: 9999, d: false }, //KK_nekopara_Cinnamon
+    { channel: '1054497066392494161', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: [], t: 9999, d: false }, //KK_nekopara_Vanilla
+    { channel: '1054498770257195148', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: [], t: 9999, d: false }, //KK_nekopara_Azuki
+    { channel: '1054497493066453062', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: [], t: 9999, d: false }, //KK_nekopara_Chocola
+    { channel: '1054499677954912327', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: [], t: 9999, d: false }, //KK_nekopara_Coconut
 ];
 
 export default async (message: Message<boolean>) => {
     const channel = channels.find(({ channel }) => channel === message.channelId);
-    if (!channel || message.channel.type.toString() !== ('0' || '11') || !message.id) return;
+    if (!channel || !message.channel.type.toString().match(/0|11/g) || !message?.id) return;
     let counter = (await Counter.findOne({ id: message.channelId })) as CounterInterface;
     if (counter === null) {
         Counter.insertOne({ id: message.channelId, count: 0 });
