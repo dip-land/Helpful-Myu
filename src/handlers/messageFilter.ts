@@ -32,7 +32,7 @@ const channels: Channels = [
 
 export default async (message: Message<boolean>) => {
     const channel = channels.find(({ channel }) => channel === message.channelId);
-    if (!channel || message.channel.type !== (0 || 11 || 12) || !message.id) return;
+    if (!channel || message.channel.type.toString() !== ('0' || '11') || !message.id) return;
     let counter = (await Counter.findOne({ id: message.channelId })) as CounterInterface;
     if (counter === null) {
         Counter.insertOne({ id: message.channelId, count: 0 });
