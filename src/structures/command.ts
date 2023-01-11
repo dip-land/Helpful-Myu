@@ -14,7 +14,7 @@ export class Command {
     #description = '';
     #options?: ChatInputApplicationCommandData['options'] = [];
     #aliases: Array<string> = [];
-    #category = '';
+    #category: CommandCategories = '';
     #cooldown?: number = 5;
     #disabled?: boolean = false;
     #default_member_permissions?: string;
@@ -79,35 +79,14 @@ export class Command {
     }
 }
 
-export class CommandOptions {
-    name = '';
-    description = '';
-    options?: ChatInputApplicationCommandData['options'] = [];
-    aliases: Array<string> = [];
-    category = '';
-    cooldown?: number = 5;
-    disabled?: boolean = false;
-    default_member_permissions? = '';
-    permissions?: Array<PermissionResolvable> = [];
-    prefixCommand?: (message: Message, args: Array<string>) => Promise<unknown>;
-    slashCommand?: (interaction: CommandInteraction, options: readonly CommandInteractionOption<CacheType>[]) => Promise<unknown>;
-    button?: (interaction: ButtonInteraction, message: undefined | Message, args: Array<string>) => Promise<unknown>;
-    selectMenu?: (interaction: AnySelectMenuInteraction, message: undefined | Message, args: Array<string>) => Promise<unknown>;
-}
+export type CommandCategories = '' | 'config' | 'music' | 'quotes' | 'utility';
 
-export class ApplicationData {
-    name!: string;
-    description!: string;
-    options: ChatInputApplicationCommandData['options'];
-    default_member_permissions!: string | undefined;
-}
-
-export class CommandObject {
-    name!: string;
-    description!: string;
-    options: ChatInputApplicationCommandData['options'];
-    aliases!: Array<string>;
-    category!: string;
+export type CommandOptions = {
+    name: string;
+    description: string;
+    options?: ChatInputApplicationCommandData['options'];
+    aliases: Array<string>;
+    category: CommandCategories;
     cooldown?: number;
     disabled?: boolean;
     default_member_permissions?: string;
@@ -116,4 +95,27 @@ export class CommandObject {
     slashCommand?: (interaction: CommandInteraction, options: readonly CommandInteractionOption<CacheType>[]) => Promise<unknown>;
     button?: (interaction: ButtonInteraction, message: undefined | Message, args: Array<string>) => Promise<unknown>;
     selectMenu?: (interaction: AnySelectMenuInteraction, message: undefined | Message, args: Array<string>) => Promise<unknown>;
-}
+};
+
+export type ApplicationData = {
+    name: string;
+    description: string;
+    options: ChatInputApplicationCommandData['options'];
+    default_member_permissions: string | undefined;
+};
+
+export type CommandObject = {
+    name: string;
+    description: string;
+    options: ChatInputApplicationCommandData['options'];
+    aliases: Array<string>;
+    category: CommandCategories;
+    cooldown?: number;
+    disabled?: boolean;
+    default_member_permissions?: string;
+    permissions?: Array<PermissionResolvable>;
+    prefixCommand?: (message: Message, args: Array<string>) => Promise<unknown>;
+    slashCommand?: (interaction: CommandInteraction, options: readonly CommandInteractionOption<CacheType>[]) => Promise<unknown>;
+    button?: (interaction: ButtonInteraction, message: undefined | Message, args: Array<string>) => Promise<unknown>;
+    selectMenu?: (interaction: AnySelectMenuInteraction, message: undefined | Message, args: Array<string>) => Promise<unknown>;
+};
