@@ -100,7 +100,9 @@ export default new Command({
     },
     async prefixCommand(message, args) {
         let user = args[0] ? await message.client.users.fetch(args[0].replace('<@', '').replace('>', ''), { force: true }).catch((e) => {}) : await message.author.fetch(true);
-        if (user === void 0) user = (await message.guild?.members.fetch({ query: args.join(' '), limit: 1 }))?.first()?.user || message.author;
+        if (user === void 0) {
+            user = (await (await message.guild?.members.fetch({ query: args.join(' '), limit: 1 }))?.first()?.user.fetch(true)) || (await message.author.fetch(true));
+        }
         const member = await (await message.client.guilds.fetch(message?.guildId as string)).members.fetch(user.id);
         const hasServerAvatar = user.displayAvatarURL() !== member.displayAvatarURL();
         const avatar = user.displayAvatarURL({ size: 2048 });

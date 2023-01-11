@@ -21,11 +21,18 @@ const channels: Channels = [
         t: 0,
         d: true,
     }, //KK_memes-only
+    { channel: '1054502394026799225', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: ["❕>w< w-where's the cute~?? Post more cute~!"], t: 9999, d: false }, //KK_nekopara_Shigure
+    { channel: '1054499211187585105', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: ["❕>w< w-where's the cute~?? Post more cute~!"], t: 9999, d: false }, //KK_nekopara_Maple
+    { channel: '1054501266757255169', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: ["❕>w< w-where's the cute~?? Post more cute~!"], t: 9999, d: false }, //KK_nekopara_Cinnamon
+    { channel: '1054497066392494161', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: ["❕>w< w-where's the cute~?? Post more cute~!"], t: 9999, d: false }, //KK_nekopara_Vanilla
+    { channel: '1054498770257195148', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: ["❕>w< w-where's the cute~?? Post more cute~!"], t: 9999, d: false }, //KK_nekopara_Azuki
+    { channel: '1054497493066453062', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: ["❕>w< w-where's the cute~?? Post more cute~!"], t: 9999, d: false }, //KK_nekopara_Chocola
+    { channel: '1054499677954912327', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: ["❕>w< w-where's the cute~?? Post more cute~!"], t: 9999, d: false }, //KK_nekopara_Coconut
 ];
 
 export default async (message: Message<boolean>) => {
     const channel = channels.find(({ channel }) => channel === message.channelId);
-    if (!channel || message.channel.type !== 0 || !message?.id) return;
+    if (!channel || message.channel.type !== (0 || 11 || 12) || !message.id) return;
     let counter = (await Counter.findOne({ id: message.channelId })) as CounterInterface;
     if (counter === null) {
         Counter.insertOne({ id: message.channelId, count: 0 });
@@ -78,8 +85,6 @@ export default async (message: Message<boolean>) => {
 };
 
 function finish(message: Message<boolean>, channel: Channels[0]) {
-    if (message.channel.type !== 0) return;
-    if (!message?.id) return;
     Counter.findOneAndUpdate({ id: message.channelId }, { $set: { count: 0 } });
     for (const emoji of channel.emojis) {
         message.react(emoji).catch((err: Error) => console.log('error reacting to a message'));

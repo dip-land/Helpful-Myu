@@ -48,16 +48,6 @@ export interface UserInterface {
     money: number;
 }
 
-export const Queue: Collection<QueueInterface> = database.collection('Queues');
-
-export interface QueueInterface {
-    _id?: ObjectId | null;
-    url: string;
-    platform: string;
-    duration: number;
-    currentDuration: number;
-}
-
 export const Quote: Collection<QuoteInterface> = database.collection('Quotes');
 
 export interface QuoteInterface {
