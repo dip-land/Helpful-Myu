@@ -8,5 +8,5 @@ export default async (interaction: AnySelectMenuInteraction) => {
     const message = args[2] === 'i' ? undefined : await interaction.channel?.messages.fetch(args[2]);
     if (args[1] !== interaction.user.id) interaction.reply({ content: 'Only command initiator can use this select menu.', ephemeral: true });
     if (!command?.commandObject) return;
-    command.selectMenu(interaction, message, args).catch((e) => {});
+    command.selectMenu(interaction, message, args).catch((err: Error) => {});
 };

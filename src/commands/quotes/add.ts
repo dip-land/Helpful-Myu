@@ -1,3 +1,4 @@
+import { ApplicationCommandOptionType } from 'discord.js';
 import { Command } from '../../structures/command.js';
 import { Quote, QuoteCreated } from '../../handlers/database/mongo.js';
 
@@ -6,19 +7,19 @@ export default new Command({
     description: 'Create a quote',
     options: [
         {
-            type: 3,
+            type: ApplicationCommandOptionType.String,
             name: 'keyword',
             description: 'The quotes keyword',
             required: true,
         },
         {
-            type: 3,
+            type: ApplicationCommandOptionType.String,
             name: 'text',
             description: 'The quotes content',
             required: true,
         },
         {
-            type: 5,
+            type: ApplicationCommandOptionType.Boolean,
             name: 'hide',
             description: 'Hide the response',
         },
@@ -28,10 +29,10 @@ export default new Command({
     cooldown: 10,
     async slashCommand(interaction, options) {
         try {
-            const keyword = `${options.find((option) => option.name === 'keyword')?.value}`.toLowerCase();
-            const text = options.find((option) => option.name === 'text')?.value as string;
+            const keyword = options.getString('keyword', true).toLowerCase().replace(' ', '_');
+            const text = options.getString('text', true);
             const id = keyword + ((await Quote.countDocuments({ keyword })) + 1);
-            Quote.insertOne({ id, keyword: keyword?.toLowerCase(), text, createdBy: interaction.user.id, createdAt: new Date() }).then(() => {
+            Quote.insertOne({ id, keyword: keyword, text, createdBy: interaction.user.id, createdAt: new Date() }).then(() => {
                 Quote.findOne({ id }).then((q) => {
                     if (q) {
                         QuoteCreated(q);

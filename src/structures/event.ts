@@ -2,9 +2,9 @@ export class Event {
     #name = '';
     #on = true;
     #fn: (...args: any) => Promise<any>;
-    constructor(options: EventOptions) {
+    constructor(options: EventObject) {
         this.#name = options.name;
-        this.#on = options.on;
+        this.#on = options?.on || true;
         this.#fn = options.fn;
     }
 
@@ -19,14 +19,8 @@ export class Event {
     }
 }
 
-export class EventOptions {
-    name = '';
-    on = true;
-    fn!: (...args: any) => Promise<any>;
-}
-
-export class EventObject {
-    name!: string;
-    on!: boolean;
-    fn!: (...args: any) => Promise<any>;
-}
+export type EventObject = {
+    name: string;
+    on?: boolean;
+    fn: (...args: any) => Promise<any>;
+};

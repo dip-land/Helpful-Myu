@@ -1,13 +1,4 @@
-import type {
-    ButtonInteraction,
-    CacheType,
-    ChatInputApplicationCommandData,
-    CommandInteraction,
-    CommandInteractionOption,
-    Message,
-    PermissionResolvable,
-    AnySelectMenuInteraction,
-} from 'discord.js';
+import type { ButtonInteraction, ChatInputApplicationCommandData, ChatInputCommandInteraction, Message, PermissionResolvable, AnySelectMenuInteraction } from 'discord.js';
 
 export class Command {
     #name = '';
@@ -20,10 +11,10 @@ export class Command {
     #default_member_permissions?: string;
     #permissions?: Array<PermissionResolvable> = [];
     #prefixCommand?: (message: Message, args: Array<string>) => Promise<unknown>;
-    #slashCommand?: (interaction: CommandInteraction, options: readonly CommandInteractionOption<CacheType>[]) => Promise<unknown>;
+    #slashCommand?: (interaction: ChatInputCommandInteraction, options: ChatInputCommandInteraction['options']) => Promise<unknown>;
     #button?: (interaction: ButtonInteraction, message: undefined | Message, args: Array<string>) => Promise<unknown>;
     #selectMenu?: (interaction: AnySelectMenuInteraction, message: undefined | Message, args: Array<string>) => Promise<unknown>;
-    constructor(options: CommandOptions) {
+    constructor(options: CommandObject) {
         this.#name = options.name;
         this.#description = options.description;
         this.#options = options.options;
@@ -68,8 +59,8 @@ export class Command {
     public get prefixCommand(): (message: Message, args: Array<string>) => Promise<unknown> {
         return this.#prefixCommand as (message: Message<boolean>, args: string[]) => Promise<unknown>;
     }
-    public get slashCommand(): (interaction: CommandInteraction, options: readonly CommandInteractionOption<CacheType>[]) => Promise<unknown> {
-        return this.#slashCommand as (interaction: CommandInteraction, options: readonly CommandInteractionOption<CacheType>[]) => Promise<unknown>;
+    public get slashCommand(): (interaction: ChatInputCommandInteraction, options: ChatInputCommandInteraction['options']) => Promise<unknown> {
+        return this.#slashCommand as (interaction: ChatInputCommandInteraction, options: ChatInputCommandInteraction['options']) => Promise<unknown>;
     }
     public get button(): (interaction: ButtonInteraction, message: undefined | Message, args: Array<string>) => Promise<unknown> {
         return this.#button as (interaction: ButtonInteraction, message: undefined | Message, args: Array<string>) => Promise<unknown>;
@@ -79,23 +70,7 @@ export class Command {
     }
 }
 
-export type CommandCategories = '' | 'config' | 'music' | 'quotes' | 'utility';
-
-export type CommandOptions = {
-    name: string;
-    description: string;
-    options?: ChatInputApplicationCommandData['options'];
-    aliases: Array<string>;
-    category: CommandCategories;
-    cooldown?: number;
-    disabled?: boolean;
-    default_member_permissions?: string;
-    permissions?: Array<PermissionResolvable>;
-    prefixCommand?: (message: Message, args: Array<string>) => Promise<unknown>;
-    slashCommand?: (interaction: CommandInteraction, options: readonly CommandInteractionOption<CacheType>[]) => Promise<unknown>;
-    button?: (interaction: ButtonInteraction, message: undefined | Message, args: Array<string>) => Promise<unknown>;
-    selectMenu?: (interaction: AnySelectMenuInteraction, message: undefined | Message, args: Array<string>) => Promise<unknown>;
-};
+export type CommandCategories = '' | 'config' | 'music' | 'quotes' | 'roleplay' | 'utility';
 
 export type ApplicationData = {
     name: string;
@@ -107,7 +82,7 @@ export type ApplicationData = {
 export type CommandObject = {
     name: string;
     description: string;
-    options: ChatInputApplicationCommandData['options'];
+    options?: ChatInputApplicationCommandData['options'];
     aliases: Array<string>;
     category: CommandCategories;
     cooldown?: number;
@@ -115,7 +90,7 @@ export type CommandObject = {
     default_member_permissions?: string;
     permissions?: Array<PermissionResolvable>;
     prefixCommand?: (message: Message, args: Array<string>) => Promise<unknown>;
-    slashCommand?: (interaction: CommandInteraction, options: readonly CommandInteractionOption<CacheType>[]) => Promise<unknown>;
+    slashCommand?: (interaction: ChatInputCommandInteraction, options: ChatInputCommandInteraction['options']) => Promise<unknown>;
     button?: (interaction: ButtonInteraction, message: undefined | Message, args: Array<string>) => Promise<unknown>;
     selectMenu?: (interaction: AnySelectMenuInteraction, message: undefined | Message, args: Array<string>) => Promise<unknown>;
 };

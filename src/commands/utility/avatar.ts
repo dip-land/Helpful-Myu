@@ -1,22 +1,23 @@
-import type { Guild, GuildMember } from 'discord.js';
+import { ApplicationCommandOptionType, type GuildMember } from 'discord.js';
 import { Command } from '../../structures/command.js';
+import { embedColor } from '../../index.js';
 
 export default new Command({
     name: 'avatar',
     description: 'Display another users avatar, or your own',
     options: [
         {
-            type: 6,
+            type: ApplicationCommandOptionType.User,
             name: 'query',
             description: 'User you want to view the avatar of',
         },
         {
-            type: 5,
+            type: ApplicationCommandOptionType.Boolean,
             name: 'server',
             description: 'Show the users server avatar instead of their global avatar',
         },
         {
-            type: 4,
+            type: ApplicationCommandOptionType.Number,
             name: 'size',
             description: 'Size of the image',
             choices: [
@@ -59,18 +60,18 @@ export default new Command({
             ],
         },
         {
-            type: 5,
+            type: ApplicationCommandOptionType.Boolean,
             name: 'hide',
             description: 'Hide the response',
         },
     ],
     aliases: [],
     category: 'utility',
-    async slashCommand(interaction) {
-        const server = interaction.options.get('server')?.value as boolean | undefined;
-        const size = interaction.options.get('size')?.value as 2048 | 16 | 32 | 64 | 128 | 256 | 512 | 1024 | 4096 | undefined;
-        const user = interaction.options.get('query')?.user || interaction.user;
-        const member = (interaction.options.get('query')?.member as GuildMember) || (interaction.member as GuildMember);
+    async slashCommand(interaction, options) {
+        const server = options.getBoolean('server');
+        const size = options.getNumber('size') as 2048 | 16 | 32 | 64 | 128 | 256 | 512 | 1024 | 4096 | undefined;
+        const user = options.getUser('query') || interaction.user;
+        const member = (options.getMember('query') as GuildMember) || (interaction.member as GuildMember);
         const avatar = server ? member.displayAvatarURL({ size: size || 2048 }) : user.displayAvatarURL({ size: size || 2048 });
         const person = server ? member : user;
         if (!avatar) return interaction.editReply('User does not have an avatar.');
@@ -78,7 +79,7 @@ export default new Command({
         interaction.editReply({
             embeds: [
                 {
-                    color: 0xafbbea,
+                    color: embedColor,
                     title: user.tag + ' Avatar',
                     description:
                         `${server ? `**[Server Avatar](${avatar})**` : `**[Global Avatar](${avatar})**`}` +
@@ -99,7 +100,9 @@ export default new Command({
         });
     },
     async prefixCommand(message, args) {
-        let user = args[0] ? await message.client.users.fetch(args[0].replace('<@', '').replace('>', ''), { force: true }).catch((e) => {}) : await message.author.fetch(true);
+        let user = args[0]
+            ? await message.client.users.fetch(args[0].replace('<@', '').replace('>', ''), { force: true }).catch((err: Error) => {})
+            : await message.author.fetch(true);
         if (user === void 0) {
             user = (await (await message.guild?.members.fetch({ query: args.join(' '), limit: 1 }))?.first()?.user.fetch(true)) || (await message.author.fetch(true));
         }
@@ -123,7 +126,7 @@ export default new Command({
         message.reply({
             embeds: [
                 {
-                    color: 0xafbbea,
+                    color: embedColor,
                     title: user.tag + ' Avatar',
                     description:
                         `**[Global Avatar](${avatar})**` +
@@ -154,7 +157,7 @@ export default new Command({
         interaction.message.edit({
             embeds: [
                 {
-                    color: 0xafbbea,
+                    color: embedColor,
                     title: user.tag + ' Avatar',
                     description:
                         `${global ? `**[Global Avatar](${avatar})**` : `**[Server Avatar](${avatar})**`}` +

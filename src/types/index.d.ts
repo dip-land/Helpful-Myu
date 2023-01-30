@@ -1,4 +1,4 @@
-import type { Collection, PermissionResolvable } from 'discord.js';
+import type { Collection } from 'discord.js';
 import type { Command } from '../structures/command.js';
 declare module 'discord.js' {
     interface Client {
@@ -10,12 +10,3 @@ declare module 'discord.js' {
         voice: VoiceState;
     }
 }
-
-export type CommandFileExtendedData = {
-    aliases?: Array<string>;
-    category: string;
-    cooldown?: number;
-    disabled?: boolean;
-    default_member_permissions?: string;
-    permissions?: Array<PermissionResolvable>;
-};

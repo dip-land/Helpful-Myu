@@ -1,18 +1,20 @@
+import { ApplicationCommandOptionType } from 'discord.js';
 import { Command } from '../../structures/command.js';
 import { Quote, QuoteDeleted, type QuoteInterface } from '../../handlers/database/mongo.js';
+import { embedColor } from '../../index.js';
 
 export default new Command({
     name: 'quotedelete',
     description: 'Delete a quote by its ID',
     options: [
         {
-            type: 3,
+            type: ApplicationCommandOptionType.String,
             name: 'id',
             description: 'The quotes ID',
             required: true,
         },
         {
-            type: 5,
+            type: ApplicationCommandOptionType.Boolean,
             name: 'hide',
             description: 'Hide the response',
         },
@@ -22,7 +24,7 @@ export default new Command({
     cooldown: 10,
     async slashCommand(interaction, options) {
         try {
-            const id = options.find((option) => option.name === 'id')?.value as string;
+            const id = options.getString('id', true);
             const quote = await Quote.findOne({ id });
             if (!quote) return interaction.editReply(`The quote ${id} jar is empty :3`);
             const createdBy = await interaction.client.users.fetch(quote.createdBy);
@@ -30,7 +32,7 @@ export default new Command({
             interaction.editReply({
                 embeds: [
                     {
-                        color: 0xafbbea,
+                        color: embedColor,
                         title: 'Do you wanna compost this quote, myaa?',
                         description: `**ID:** ${quote.id}\n**Keyword:** ${quote.keyword}\n**Text:** ${quote.text}\n**Created By:** ${createdBy.tag} (${
                             createdBy.id
@@ -62,8 +64,8 @@ export default new Command({
                     },
                 ],
             });
-        } catch (error) {
-            console.log(error);
+        } catch (err: Error | unknown) {
+            console.log(err);
         }
     },
     async prefixCommand(message, args) {
@@ -77,7 +79,7 @@ export default new Command({
         message.reply({
             embeds: [
                 {
-                    color: 0xafbbea,
+                    color: embedColor,
                     title: 'Do you wanna compost this quote, myaa?',
                     description: `**ID:** ${quote.id}\n**Keyword:** ${quote.keyword}\n**Text:** ${quote.text}\n**Created By:** ${createdBy.tag} (${
                         createdBy.id
@@ -113,10 +115,10 @@ export default new Command({
     async button(interaction, message, args) {
         Quote.findOneAndDelete({ id: args[3] }).then((deleted) => {
             QuoteDeleted(deleted.value as QuoteInterface);
-            interaction.deleteReply().catch((e) => {});
-            interaction.reply({ content: 'Quote deleted.', ephemeral: true }).catch((e) => {});
-            interaction.message.delete().catch((e) => {});
-            message?.delete().catch((e) => {});
+            interaction.deleteReply().catch((err: Error) => {});
+            interaction.reply({ content: 'Quote deleted.', ephemeral: true }).catch((err: Error) => {});
+            interaction.message.delete().catch((err: Error) => {});
+            message?.delete().catch((err: Error) => {});
         });
     },
 });

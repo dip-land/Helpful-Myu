@@ -1,5 +1,5 @@
-import { Command } from '../../structures/command.js';
 import { ApplicationCommandOptionType } from 'discord.js';
+import { Command } from '../../structures/command.js';
 import { Quote } from '../../handlers/database/mongo.js';
 
 export default new Command({
@@ -13,7 +13,7 @@ export default new Command({
             required: true,
         },
         {
-            type: 5,
+            type: ApplicationCommandOptionType.Boolean,
             name: 'hide',
             description: 'Hide the response',
         },
@@ -22,14 +22,14 @@ export default new Command({
     category: 'quotes',
     async slashCommand(interaction, options) {
         try {
-            const keyword = `${options.find((option) => option.name === 'keyword')?.value}`.toLowerCase();
+            const keyword = options.getString('keyword', true).toLowerCase().replace(' ', '_');
             let quotes = await Quote.find({ id: keyword }).toArray();
             if (!quotes[0]) quotes = await Quote.find({ keyword: keyword }).toArray();
 
             const chosen = quotes[Math.floor(Math.random() * quotes.length)];
             interaction.editReply(chosen?.text || 'This query has no quotes, sempai~');
-        } catch (error) {
-            console.log(error);
+        } catch (err: Error | unknown) {
+            console.log(err);
         }
     },
     async prefixCommand(message, args) {

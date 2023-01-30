@@ -17,7 +17,7 @@ export const Config: Collection<ConfigInterface> = database.collection('Config')
 
 export interface ConfigInterface {
     _id?: ObjectId | null;
-    type: 'prefix' | 'channel';
+    type: 'quoteLog' | 'channel' | 'prefix' | 'joinLog' | 'leaveLog';
     data: string | ChannelConfigInterface;
 }
 
@@ -60,8 +60,9 @@ export interface QuoteInterface {
 }
 
 export async function QuoteCreated(quote: QuoteInterface) {
-    const channelID = beta ? '1002785897005199480' : '1004144428019097600';
-    const channel = await client.channels.fetch(channelID).catch((e) => {});
+    const channelID = (await Config.findOne({ type: 'quoteLog' }))?.data as string | undefined;
+    if (!channelID) return;
+    const channel = await client.channels.fetch(channelID).catch((err: Error) => {});
     const createdBy = await client.users.fetch(quote.createdBy);
     if (channel && channel?.isTextBased()) {
         channel.send({
@@ -73,8 +74,9 @@ export async function QuoteCreated(quote: QuoteInterface) {
 }
 
 export async function QuoteDeleted(quote: QuoteInterface) {
-    const channelID = beta ? '1002785897005199480' : '1004144428019097600';
-    const channel = await client.channels.fetch(channelID).catch((e) => {});
+    const channelID = (await Config.findOne({ type: 'quoteLog' }))?.data as string | undefined;
+    if (!channelID) return;
+    const channel = await client.channels.fetch(channelID).catch((err: Error) => {});
     const createdBy = await client.users.fetch(quote.createdBy);
     if (channel && channel?.isTextBased()) {
         channel.send({
