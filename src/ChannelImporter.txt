@@ -30,7 +30,7 @@ client.on('messageCreate', async (message) => {
 			}
 			for (const content of message.content.split(' ')) {
 				if (content.startsWith('http')) {
-					const data = await fetch(content, { method: 'HEAD' }).catch((e) => {});
+					const data = await fetch(content, { method: 'HEAD' }).catch((err: Error) => {});
 					if (data) {
 						finalMessages.push(content);
 						console.log('c', content);
@@ -44,7 +44,7 @@ client.on('messageCreate', async (message) => {
 		}
 		for (const content of msg.content.split(' ')) {
 			if (content.startsWith('http')) {
-				const data = await fetch(content, { method: 'HEAD' }).catch((e) => {});
+				const data = await fetch(content, { method: 'HEAD' }).catch((err: Error) => {});
 				if (data) {
 					finalMessages.push(content);
 					console.log('c', content);
@@ -60,11 +60,11 @@ client.on('messageCreate', async (message) => {
 				if (finalMessages[link].startsWith('https://cdn.discordapp') || finalMessages[link].startsWith('https://media.discordapp')) {
 					try {
 						send = { files: [new AttachmentBuilder(Buffer.from(await (await fetch(finalMessages[link])).arrayBuffer()), { name: `${Date.now()}${finalMessages[link].slice(-6)}` })] };
-					} catch (e) {}
+					} catch (err: Error) {}
 					const channel = (await client.channels.fetch(to)) as Channel;
 					if (!channel.isTextBased()) return;
-					const a = (await channel.send(send).catch((e) => {})) as Message;
-					if (a?.id) a.react('<a:akafeheart:1009602965616726026>').catch((e) => {});
+					const a = (await channel.send(send).catch((err: Error) => {})) as Message;
+					if (a?.id) a.react('<a:akafeheart:1009602965616726026>').catch((err: Error) => {});
 				}
 				console.log(`${parseInt(link) + 1}/${finalMessages.length}`);
 			}, (parseInt(link) + 1) * 1200);

@@ -8,11 +8,11 @@ export default async (interaction: ButtonInteraction) => {
     const message = args[2] === 'i' ? undefined : await interaction.channel?.messages.fetch(args[2]);
     if (args[1] !== interaction.user.id) interaction.reply({ content: 'Only command initiator can use these buttons.', ephemeral: true });
     if (commandName === 'cancel') {
-        interaction.reply({ content: 'Command canceled.', ephemeral: true }).catch((e) => {});
-        interaction.message.delete().catch((e) => {});
-        message?.delete().catch((e) => {});
+        interaction.reply({ content: 'Command canceled.', ephemeral: true }).catch((err: Error) => {});
+        interaction.message.delete().catch((err: Error) => {});
+        message?.delete().catch((err: Error) => {});
         return;
     }
     if (!command?.commandObject) return;
-    command.button(interaction, message, args).catch((e) => {});
+    command.button(interaction, message, args).catch((err: Error) => {});
 };

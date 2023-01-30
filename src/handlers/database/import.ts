@@ -26,7 +26,7 @@ export default function importData(path: string, deleteImportFile: boolean) {
                         createdAt: new Date(data.properties.createdAt),
                     });
                 } else if (path.toLowerCase().includes('user')) User.insertOne(data.properties);
-            } catch (error) {}
+            } catch (err: Error | unknown) {}
         }
         if (deleteImportFile) unlinkSync(path);
     });

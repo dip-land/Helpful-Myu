@@ -1,17 +1,18 @@
-import type { User, Client } from 'discord.js';
+import { ApplicationCommandOptionType, type User, type Client } from 'discord.js';
 import { Command } from '../../structures/command.js';
+import { embedColor } from '../../index.js';
 
 export default new Command({
     name: 'help',
     description: 'Get some help :3',
     options: [
         {
-            type: 3,
+            type: ApplicationCommandOptionType.String,
             name: 'query',
             description: 'Command you want to search for',
         },
         {
-            type: 5,
+            type: ApplicationCommandOptionType.Boolean,
             name: 'hide',
             description: 'Hide the response',
         },
@@ -19,12 +20,12 @@ export default new Command({
     aliases: ['commands', 'cmds'],
     category: 'utility',
     async slashCommand(interaction, options) {
-        const query: string | number = options.find((option) => option.name === 'query')?.value as string;
+        const query = options.getString('query');
         if (!query) {
             interaction.editReply({
                 embeds: [
                     {
-                        color: 0xafbbea,
+                        color: embedColor,
                         title: 'Help',
                         description: makeDefaultText(interaction.client, true),
                         timestamp: new Date().toISOString(),
@@ -46,7 +47,7 @@ export default new Command({
             message.reply({
                 embeds: [
                     {
-                        color: 0xafbbea,
+                        color: embedColor,
                         title: 'Help',
                         description: makeDefaultText(message.client, false),
                         timestamp: new Date().toISOString(),
@@ -95,7 +96,7 @@ function makeCommandEmbed(query: string, client: Client, user: User) {
     const command = client.legacyCommands.find((command) => command.commandObject.name === query || command.commandObject.aliases.includes(query));
     if (!command?.commandObject) {
         return {
-            color: 0xafbbea,
+            color: embedColor,
             title: 'Help',
             description: makeDefaultText(client, false, true),
             timestamp: new Date().toISOString(),
@@ -106,7 +107,7 @@ function makeCommandEmbed(query: string, client: Client, user: User) {
         };
     }
     return {
-        color: 0xafbbea,
+        color: embedColor,
         title: command.commandObject.name,
         description: 'WIP',
         timestamp: new Date().toISOString(),

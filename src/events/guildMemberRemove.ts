@@ -1,16 +1,12 @@
 import type { GuildMember } from 'discord.js';
 import { client } from '../index.js';
 import { Event } from '../structures/event.js';
+import { Config } from '../handlers/database/mongo.js';
 
 export default new Event({
     name: 'guildMemberRemove',
-    on: true,
     async fn(member: GuildMember) {
-        const channels = [
-            { guild: '632717913169854495', channel: '1005657796802519192' },
-            { guild: '981639333549322262', channel: '1003983050692116550' },
-        ];
-        const sendChannel = await client.channels.fetch(channels.find(({ guild }) => guild === member.guild.id)?.channel as string);
+        const sendChannel = await client.channels.fetch((await Config.findOne({ type: 'leaveLog' }))?.data as string);
         if (sendChannel?.type !== 0) return;
         const created = Math.round(member.user.createdTimestamp / 1000);
         const left = Math.round(Date.now() / 1000);

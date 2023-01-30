@@ -1,40 +1,17 @@
-import type { Message } from 'discord.js';
-import { Counter, type CounterInterface } from './database/mongo.js';
+import type { Message, ThreadChannel } from 'discord.js';
+import { type ChannelConfigInterface, Counter, type CounterInterface, Config } from './database/mongo.js';
 
-export type Channels = Array<{ channel: string; emojis: Array<string>; msgs: Array<string>; t: number; d: boolean }>;
-
-const channels: Channels = [
-    { channel: '690972955080917085', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: ["❕>w< w-where's the cute~?? Post more cute~!"], t: 8, d: false }, //KK_tea-room
-    { channel: '1054475329776926830', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: ["❕>w< w-where's the cute~?? Post more cute~!"], t: 10, d: false }, //KK_extra-cute
-    { channel: '1054471487119179886', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: ["❕>w< w-where's the cute~?? Post more cute~!"], t: 10, d: false }, //KK_super-cute
-    { channel: '1062537412225544204', emojis: ['💖'], msgs: ['>:('], t: 0, d: true }, //SB_msgblocktest
-    {
-        channel: '960560813637255189',
-        emojis: [
-            '<a:akafeheart:1009602965616726026>',
-            '<:cocsmile:960630832219971624>',
-            '<:chopain:960614470940504075>',
-            '<:cindizzy:960630695464669214>',
-            '<:mapmad:960614761349935134>',
-        ],
-        msgs: ['Nyuuu~ no tyext in the meme channel~! >w<', 'Bakaa customer~, read the channel descwiption~! >w>', 'Nyaaa~! Memes only means memes onlyy~ >w>'],
-        t: 0,
-        d: true,
-    }, //KK_memes-only
-    { channel: '1054502394026799225', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: [], t: 9999, d: false }, //KK_nekopara_Shigure
-    { channel: '1054499211187585105', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: [], t: 9999, d: false }, //KK_nekopara_Maple
-    { channel: '1054501266757255169', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: [], t: 9999, d: false }, //KK_nekopara_Cinnamon
-    { channel: '1054497066392494161', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: [], t: 9999, d: false }, //KK_nekopara_Vanilla
-    { channel: '1054498770257195148', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: [], t: 9999, d: false }, //KK_nekopara_Azuki
-    { channel: '1054497493066453062', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: [], t: 9999, d: false }, //KK_nekopara_Chocola
-    { channel: '1054499677954912327', emojis: ['<a:akafeheart:1009602965616726026>'], msgs: [], t: 9999, d: false }, //KK_nekopara_Coconut
-];
+let channels = (await Config.find({ type: 'channel' }).toArray()).map((conf) => conf.data) as Array<ChannelConfigInterface>;
+export async function fetchChannelConfigs() {
+    channels = (await Config.find({ type: 'channel' }).toArray()).map((conf) => conf.data) as Array<ChannelConfigInterface>;
+}
 
 export default async (message: Message<boolean>) => {
-    const channel = channels.find(({ channel }) => channel === message.channelId);
+    let channel = channels.find(({ channel }) => channel === message.channelId);
+    if (!channel && message.channel.isThread()) channel = channels.find(({ channel }) => channel === (message.channel as ThreadChannel).parentId);
     if (!channel || !message.channel.type.toString().match(/0|11/g) || !message?.id) return;
     let counter = (await Counter.findOne({ id: message.channelId })) as CounterInterface;
-    if (counter === null) {
+    if (!counter) {
         Counter.insertOne({ id: message.channelId, count: 0 });
         counter = (await Counter.findOne({ id: message.channelId })) as CounterInterface;
     }
@@ -50,13 +27,7 @@ export default async (message: Message<boolean>) => {
         const contents = message.content.split(' ');
         const checks: Array<number> = [];
         for (const content of contents) {
-            if (
-                content.startsWith('https://tenor.com/view/') ||
-                content.startsWith('https://www.reddit.com/') ||
-                content.startsWith('https://twitter.com/') ||
-                content.startsWith('https://vxtwitter.com/') ||
-                content.match(/^(https?:\/\/)?((www\.)?youtube\.com|youtu\.be)\/.+$/g)
-            ) {
+            if (channel.allowedUrls.includes(content)) {
                 checks.push(1);
             } else if (content.startsWith('http')) {
                 const data = await fetch(content, { method: 'HEAD' }).catch((err: Error) => {});
@@ -69,14 +40,16 @@ export default async (message: Message<boolean>) => {
         }
         if (!checks.includes(0) && checks.length > 0) return finish(message, channel);
         else {
-            Counter.findOneAndUpdate({ id: message.channelId }, { $set: { count: counter.count++ } });
-            if (counter.count >= channel.t) {
-                message.channel.send(channel.msgs[Math.floor(Math.random() * channel.msgs.length)]).then((msg) => {
-                    setTimeout(() => {
-                        msg.delete().catch((err: Error) => {});
-                    }, 30000);
-                });
-                if (channel.d && message.deletable) {
+            Counter.updateOne({ id: message.channelId }, { $set: { count: counter.count + 1 } });
+            if (counter.count >= channel.maxMessages) {
+                if (channel.messages[0]) {
+                    message.channel.send(channel.messages[Math.floor(Math.random() * channel.messages.length)]).then((msg) => {
+                        setTimeout(() => {
+                            msg.delete().catch((err: Error) => {});
+                        }, 30000);
+                    });
+                }
+                if (channel.deleteAtMax && message.deletable) {
                     message.delete().catch((err: Error) => {});
                 }
             }
@@ -84,8 +57,8 @@ export default async (message: Message<boolean>) => {
     }
 };
 
-function finish(message: Message<boolean>, channel: Channels[0]) {
-    Counter.findOneAndUpdate({ id: message.channelId }, { $set: { count: 0 } });
+function finish(message: Message<boolean>, channel: ChannelConfigInterface) {
+    Counter.updateOne({ id: message.channelId }, { $set: { count: 0 } });
     for (const emoji of channel.emojis) {
         message.react(emoji).catch((err: Error) => console.log('error reacting to a message'));
     }

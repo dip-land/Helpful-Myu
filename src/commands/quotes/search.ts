@@ -1,19 +1,20 @@
-import type { APIEmbed, APIEmbedImage, Client, User } from 'discord.js';
+import { type APIEmbed, type APIEmbedImage, ApplicationCommandOptionType, type Client, type User } from 'discord.js';
 import { Command } from '../../structures/command.js';
 import { Quote, type QuoteInterface } from '../../handlers/database/mongo.js';
+import { embedColor } from '../../index.js';
 
 export default new Command({
     name: 'quotesearch',
     description: 'Search quote by ID or Keyword',
     options: [
         {
-            type: 3,
+            type: ApplicationCommandOptionType.String,
             name: 'query',
             description: 'Keyword or ID you want to search',
             required: true,
         },
         {
-            type: 5,
+            type: ApplicationCommandOptionType.Boolean,
             name: 'hide',
             description: 'Hide the response',
         },
@@ -22,8 +23,7 @@ export default new Command({
     category: 'quotes',
     async slashCommand(interaction, options) {
         try {
-            const query: string = options.find((option) => option.name === 'query')?.value as string;
-
+            const query = options.getString('query', true);
             let quotes = await Quote.find({ id: query }).toArray();
             if (!quotes[0]) quotes = await Quote.find({ keyword: query }).toArray();
             const parsedQuotes = [];
@@ -52,8 +52,8 @@ export default new Command({
                     },
                 ],
             });
-        } catch (e) {
-            console.log(e);
+        } catch (err: Error | unknown) {
+            console.log(err);
         }
     },
     async prefixCommand(message, args) {
@@ -102,11 +102,11 @@ async function makeEmbed(quote: QuoteInterface, user: User, client: Client): Pro
     let image: APIEmbedImage | undefined;
     for (const content of contents) {
         if (content.startsWith('https://tenor.com/view/')) {
-            const gif = (await fetch(`${content}.gif`, { redirect: 'follow' }).catch((e) => {})) as Response;
+            const gif = (await fetch(`${content}.gif`, { redirect: 'follow' }).catch((err: Error) => {})) as Response;
             image = { url: gif.url };
             break;
         } else {
-            const data = await fetch(content, { method: 'HEAD' }).catch((e) => {});
+            const data = await fetch(content, { method: 'HEAD' }).catch((err: Error) => {});
             if (data) {
                 const type = data.headers.get('content-type');
                 if (type?.match(/video\/|image\/|webm/g)) {
@@ -117,7 +117,7 @@ async function makeEmbed(quote: QuoteInterface, user: User, client: Client): Pro
         }
     }
     return {
-        color: 0xafbbea,
+        color: embedColor,
         title: `Quote ${quote.id}`,
         description: `**Keyword:** ${quote.keyword}\n**Text:** ${quote.text}\n**Created By:** ${createdBy.tag} (${createdBy.id}) <t:${Math.floor(
             quote.createdAt.getTime() / 1000

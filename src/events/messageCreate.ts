@@ -7,12 +7,10 @@ import { Event } from '../structures/event.js';
 let prefixes = await Config.find({ type: 'prefix' }).toArray();
 export async function fetchPrefixes() {
     prefixes = await Config.find({ type: 'prefix' }).toArray();
-    console.log('Prefixes Updated.');
 }
 
 export default new Event({
     name: 'messageCreate',
-    on: true,
     async fn(message: Message<boolean>) {
         if (message.author.bot) return;
         if (message.member?.displayName.toLowerCase().includes('mouse') && Math.ceil(Math.random() * 49) === 42) message.channel.send('🧀');

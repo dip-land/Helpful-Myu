@@ -7,7 +7,6 @@ import { Event } from '../structures/event.js';
 
 export default new Event({
     name: 'interactionCreate',
-    on: true,
     async fn(interaction: Interaction) {
         if (!interaction?.id) return;
         if (interaction.isButton()) return button(interaction);

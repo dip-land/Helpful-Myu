@@ -19,7 +19,7 @@ export default new Command({
                     required: true,
                 },
                 {
-                    type: 5,
+                    type: ApplicationCommandOptionType.Boolean,
                     name: 'hide',
                     description: 'Hide the response',
                 },
@@ -37,7 +37,7 @@ export default new Command({
                     required: true,
                 },
                 {
-                    type: 5,
+                    type: ApplicationCommandOptionType.Boolean,
                     name: 'hide',
                     description: 'Hide the response',
                 },
@@ -49,7 +49,7 @@ export default new Command({
             type: ApplicationCommandOptionType.Subcommand,
             options: [
                 {
-                    type: 5,
+                    type: ApplicationCommandOptionType.Boolean,
                     name: 'hide',
                     description: 'Hide the response',
                 },
@@ -61,19 +61,17 @@ export default new Command({
     default_member_permissions: '8',
     permissions: ['Administrator'],
     async slashCommand(interaction, options) {
-        const subOptions = options[0];
-        const subSubOptions = subOptions.options as typeof options;
+        const prefix = options.getString('prefix');
 
-        if (subOptions.name === 'add') {
-            Config.insertOne({ type: 'prefix', data: subSubOptions[0].value as string });
-            interaction.editReply(`Prefix \`${subSubOptions[0].value}\` has been added.`);
-        } else if (subOptions.name === 'remove') {
-            await Config.findOneAndDelete({ type: 'prefix', data: subSubOptions[0].value as string });
-            interaction.editReply(`Prefix \`${subSubOptions[0].value}\` has been removed.`);
-        } else if (subOptions.name === 'view') {
-            const prefixData: Array<ConfigInterface> = await Config.find({ type: 'prefix' }).toArray();
+        if (options.getSubcommand() === 'add') {
+            Config.insertOne({ type: 'prefix', data: prefix as string });
+            interaction.editReply(`Prefix \`${prefix}\` has been added.`);
+        } else if (options.getSubcommand() === 'remove') {
+            Config.deleteOne({ type: 'prefix', data: prefix as string });
+            interaction.editReply(`Prefix \`${prefix}\` has been removed.`);
+        } else if (options.getSubcommand() === 'view') {
             const prefixes: Array<string> = [];
-            for (const prefix of prefixData) {
+            for (const prefix of await Config.find({ type: 'prefix' }).toArray()) {
                 prefixes.push(prefix.data as string);
             }
             interaction.editReply(`Here is a list of all the prefixes \`\`\`${prefixes.join('``````')}\`\`\``);
@@ -85,12 +83,11 @@ export default new Command({
             Config.insertOne({ type: 'prefix', data: args[1] as string });
             message.reply(`Prefix \`${args[1]}\` has been added.`);
         } else if (args[0] === 'remove') {
-            await Config.findOneAndDelete({ type: 'prefix', data: args[1] as string });
+            Config.deleteOne({ type: 'prefix', data: args[1] as string });
             message.reply(`Prefix \`${args[1]}\` has been removed.`);
         } else if (args[0] === 'view') {
-            const prefixData: Array<ConfigInterface> = await Config.find({ type: 'prefix' }).toArray();
             const prefixes: Array<string> = [];
-            for (const prefix of prefixData) {
+            for (const prefix of await Config.find({ type: 'prefix' }).toArray()) {
                 prefixes.push(prefix.data as string);
             }
             message.reply(`Here is a list of all the prefixes \`\`\`${prefixes.join('``````')}\`\`\``);

@@ -14,7 +14,7 @@ export default (message: Message, prefix: string, client: Client<boolean>) => {
     }
     const now = Date.now();
     const timestamps = client.cooldowns.get(commandName);
-    const cooldownAmount = (command.commandObject.cooldown || 2.5) * 1000;
+    const cooldownAmount = (command.commandObject.cooldown || 2) * 1000;
     if (timestamps.has(message.author.id)) {
         const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
         if (now < expirationTime) {
@@ -32,7 +32,7 @@ export default (message: Message, prefix: string, client: Client<boolean>) => {
 
     try {
         command.prefixCommand(message, args);
-    } catch (error) {
-        console.log(error);
+    } catch (err: Error | unknown) {
+        console.log(err);
     }
 };
