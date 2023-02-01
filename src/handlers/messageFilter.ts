@@ -27,7 +27,7 @@ export default async (message: Message<boolean>) => {
         const contents = message.content.split(' ');
         const checks: Array<number> = [];
         for (const content of contents) {
-            if (channel.allowedUrls.includes(content)) {
+            if (channel.allowedUrls.some((value) => content.includes(value))) {
                 checks.push(1);
             } else if (content.startsWith('http')) {
                 const data = await fetch(content, { method: 'HEAD' }).catch((err: Error) => {});
