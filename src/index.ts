@@ -51,13 +51,16 @@ glob('./dist/commands/**/*.js', async (err: Error | null, paths: Array<string>) 
         }
     }
     if (client.isReady()) {
-        // if (beta) {
-        //     client.rest.put(Routes.applicationGuildCommands(client.user.id, '981639333549322262'), { body: commands }).catch((err) => {
-        //         console.error(err);
-        //     });
-        // } else {
-        //     client.rest.put(Routes.applicationCommands(client.user.id), { body: commands }).catch(console.error);
-        // }
+        if (beta) {
+            client.rest.put(Routes.applicationGuildCommands(client.user.id, '981639333549322262'), { body: commands }).catch((err) => {
+                console.error(err);
+            });
+            client.rest.put(Routes.applicationGuildCommands(client.user.id, '1065154256459542539'), { body: commands }).catch((err) => {
+                console.error(err);
+            });
+        } else {
+            client.rest.put(Routes.applicationCommands(client.user.id), { body: commands }).catch(console.error);
+        }
     }
 });
 

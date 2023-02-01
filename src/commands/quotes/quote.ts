@@ -22,7 +22,7 @@ export default new Command({
     category: 'quotes',
     async slashCommand(interaction, options) {
         try {
-            const keyword = options.getString('keyword', true).toLowerCase().replace(' ', '_');
+            const keyword = options.getString('query', true).toLowerCase().replace(' ', '_');
             let quotes = await Quote.find({ id: keyword }).toArray();
             if (!quotes[0]) quotes = await Quote.find({ keyword: keyword }).toArray();
 
