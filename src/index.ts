@@ -78,5 +78,5 @@ if (!beta) {
             if (e !== null) previous = 1;
             else previous = 0;
         });
-    }, 20000);
+    }, 2000);
 }
