@@ -1,4 +1,4 @@
-import { Client, Collection, Routes } from 'discord.js';
+import { Client, Collection, type Message, Routes, Partials } from 'discord.js';
 import { MongoClient } from 'mongodb';
 import 'dotenv/config';
 import { exec } from 'child_process';
@@ -9,7 +9,10 @@ import type { Event } from './structures/event.js';
 
 export const beta = platform() === 'win32';
 export const token = beta ? (process.env.BETATOKEN as string) : (process.env.TOKEN as string);
-export const client = new Client({ intents: ['Guilds', 'GuildMessages', 'MessageContent', 'GuildMembers', 'GuildVoiceStates'] });
+export const client = new Client({
+    intents: ['Guilds', 'GuildMessages', 'MessageContent', 'GuildMembers', 'GuildVoiceStates', 'GuildMessageReactions'],
+    partials: [Partials.Message, Partials.Channel, Partials.Reaction],
+});
 export const mongoClient = new MongoClient(beta ? (process.env.MBMONGOURI as string) : (process.env.MONGOURI as string));
 export const embedColor = beta ? 0xf6e47f : 0xafbbea;
 
