@@ -210,4 +210,25 @@ export default new Command({
             interaction.editReply(`Here is a list of every channel with a config <#${channels.join('>, <#')}>`);
         }
     },
+    async prefixCommand(message, args) {
+        let json = args.join('');
+        try {
+            json = JSON.parse(json);
+            Config.insertOne({
+                type: 'channel',
+                data: json,
+            })
+                .then(() => {
+                    message.reply('Channel message filter config created.');
+                    fetchChannelConfigs();
+                })
+                .catch((err: Error) => {
+                    console.log(err);
+                    message.reply('There was an error creating the config, please let shhh#7612 know about this.');
+                });
+        } catch (err) {
+            message.reply('Something went wrong...');
+            console.log(err);
+        }
+    },
 });
