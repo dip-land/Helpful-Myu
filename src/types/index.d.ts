@@ -10,3 +10,16 @@ declare module 'discord.js' {
         voice: VoiceState;
     }
 }
+
+declare global {
+    namespace NodeJS {
+        interface ProcessEnv {
+            BETATOKEN: string;
+            HMTOKEN: string;
+            MMTOKEN: string;
+            MONGOURI: string;
+            NMTOKEN: string;
+            TENOR_KEY: string;
+        }
+    }
+}

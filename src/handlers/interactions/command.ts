@@ -1,10 +1,11 @@
-import { type ChatInputCommandInteraction, Routes } from 'discord.js';
+import { type ChatInputCommandInteraction } from 'discord.js';
 import type { Command } from '../../structures/command.js';
+import { version, timeCode } from '../../index.js';
 
 export default async (interaction: ChatInputCommandInteraction) => {
     const command = interaction.client.legacyCommands.get(interaction.commandName) as Command;
     const hidden = !!interaction.options.get('hide')?.value;
-    await interaction.deferReply({ ephemeral: hidden });
+    if (!command.slashCommand) return;
 
     if (command?.commandObject?.permissions) {
         for (const permission of command.commandObject.permissions) {
@@ -13,10 +14,12 @@ export default async (interaction: ChatInputCommandInteraction) => {
         }
     }
     if (command?.commandObject?.disabled) return interaction.editReply('This command is currently disabled.');
+    if (command?.commandObject?.beta && version !== 'beta') return interaction.editReply("This command isn't supposed to be here");
 
-    try {
-        command.slashCommand(interaction, interaction.options);
-    } catch (err: Error | unknown) {
-        console.log(err);
+    if (command.commandObject.defered === true) {
+        await interaction.deferReply({ ephemeral: hidden });
+        command.slashCommand(interaction, interaction.options).catch((err: Error) => console.log(timeCode('error'), err));
+    } else {
+        command.slashCommand(interaction, interaction.options).catch((err: Error) => console.log(timeCode('error'), err));
     }
 };

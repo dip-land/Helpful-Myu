@@ -1,6 +1,7 @@
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Command } from '../../structures/command.js';
 import { Quote } from '../../handlers/database/mongo.js';
+import { timeCode } from '../../index.js';
 
 export default new Command({
     name: 'quote',
@@ -29,7 +30,7 @@ export default new Command({
             const chosen = quotes[Math.floor(Math.random() * quotes.length)];
             interaction.editReply(chosen?.text || 'This query has no quotes, sempai~');
         } catch (err: Error | unknown) {
-            console.log(err);
+            console.log(timeCode('error'), err);
         }
     },
     async prefixCommand(message, args) {
@@ -39,6 +40,6 @@ export default new Command({
         if (!quotes[0]) quotes = await Quote.find({ keyword: keyword }).toArray();
 
         const chosen = quotes[Math.floor(Math.random() * quotes.length)];
-        message.channel.send(chosen?.text || 'This query has no quotes, sempai~');
+        if (message.channel.type === 0) message.channel.send(chosen?.text || 'This query has no quotes, sempai~');
     },
 });

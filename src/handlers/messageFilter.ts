@@ -1,65 +1,55 @@
 import type { Message, ThreadChannel } from 'discord.js';
-import { type ChannelConfigInterface, Counter, type CounterInterface, Config } from './database/mongo.js';
+import { type MessageFilterConfigInterface, Counter, type CounterInterface, Config } from './database/mongo.js';
+import { timeCode } from '../index.js';
 
-let channels = (await Config.find({ type: 'channel' }).toArray()).map((conf) => conf.data) as Array<ChannelConfigInterface>;
+let channels = (await Config.find({ type: 'channel' }).toArray()).map((conf) => conf.data) as Array<MessageFilterConfigInterface>;
 export async function fetchChannelConfigs() {
-    channels = (await Config.find({ type: 'channel' }).toArray()).map((conf) => conf.data) as Array<ChannelConfigInterface>;
+    channels = (await Config.find({ type: 'channel' }).toArray()).map((conf) => conf.data) as Array<MessageFilterConfigInterface>;
 }
 
 export default async (message: Message<boolean>) => {
-    let channel = channels.find(({ channel }) => channel === message.channelId);
-    if (!channel && message.channel.isThread()) channel = channels.find(({ channel }) => channel === (message.channel as ThreadChannel).parentId);
+    const channel = channels.find(({ channel }) => channel === (message.channel.isThread() ? (message.channel as ThreadChannel).parentId : message.channelId));
     if (!channel || !message.channel.type.toString().match(/0|11/g) || !message?.id) return;
     let counter = (await Counter.findOne({ id: message.channelId })) as CounterInterface;
     if (!counter) {
         Counter.insertOne({ id: message.channelId, count: 0 });
         counter = (await Counter.findOne({ id: message.channelId })) as CounterInterface;
     }
-    if (message.attachments.size > 0) {
-        const checks: Array<number> = [];
-        for (const [s, attachment] of message.attachments) {
-            if (attachment.contentType?.match(/video\/|image\//g)) checks.push(1);
-            else checks.push(0);
+
+    const checks: Array<number> = [];
+    for (const [, attachment] of message.attachments) attachment.contentType?.match(/video\/|image\//g) ? checks.push(1) : checks.push(0);
+
+    for (const content of message.content.split(' ')) {
+        if (!content.startsWith('http')) continue;
+
+        if (channel.allowedUrls.some((value) => new URL(content).origin.replace('www.', '').includes(value.replace(/\/$/, '')))) {
+            checks.push(1);
+            continue;
         }
-        if (!checks.includes(0)) return finish(message, channel);
+
+        const data = await fetch(content, { method: 'HEAD' }).catch((err: Error) => {});
+        data && data.headers.get('content-type')?.match(/video\/|image\//g) ? checks.push(1) : checks.push(0);
     }
-    if (message.content) {
-        const contents = message.content.split(' ');
-        const checks: Array<number> = [];
-        for (const content of contents) {
-            if (channel.allowedUrls.some((value) => content.includes(value))) {
-                checks.push(1);
-            } else if (content.startsWith('http')) {
-                const data = await fetch(content, { method: 'HEAD' }).catch((err: Error) => {});
-                if (data) {
-                    const type = data.headers.get('content-type');
-                    if (type?.match(/video\/|image\//g)) checks.push(1);
-                    else checks.push(0);
-                }
-            }
+
+    if (channel.bypassUsers && channel.bypassUsers.find((userID) => userID === message.author.id)) return finish(message, channel, true);
+    if (!checks.includes(0) && checks.includes(1)) return finish(message, channel);
+    else {
+        Counter.updateOne({ id: message.channelId }, { $set: { count: counter.count + 1 } });
+        if (counter.count >= channel.maxMessages && channel.messages[0] && message.channel.type === 0) {
+            message.channel.send(channel.messages[Math.floor(Math.random() * channel.messages.length)]).then((msg) => {
+                setTimeout(() => msg.delete().catch((err: Error) => {}), 30_000);
+            });
         }
-        if (!checks.includes(0) && checks.length > 0) return finish(message, channel);
-        else {
-            Counter.updateOne({ id: message.channelId }, { $set: { count: counter.count + 1 } });
-            if (counter.count >= channel.maxMessages) {
-                if (channel.messages[0]) {
-                    message.channel.send(channel.messages[Math.floor(Math.random() * channel.messages.length)]).then((msg) => {
-                        setTimeout(() => {
-                            msg.delete().catch((err: Error) => {});
-                        }, 30000);
-                    });
-                }
-                if (channel.deleteAtMax && message.deletable) {
-                    message.delete().catch((err: Error) => {});
-                }
-            }
-        }
+        if (channel.deleteAtMax && message.deletable) message.delete().catch((err: Error) => {});
     }
 };
 
-function finish(message: Message<boolean>, channel: ChannelConfigInterface) {
-    Counter.updateOne({ id: message.channelId }, { $set: { count: 0 } });
+function finish(message: Message<boolean>, channel: MessageFilterConfigInterface, noReset?: boolean) {
+    if (!noReset) Counter.updateOne({ id: message.channelId }, { $set: { count: 0 } });
     for (const emoji of channel.emojis) {
-        message.react(emoji).catch((err: Error) => console.log('error reacting to a message'));
+        message.react(emoji).catch((err: Error) => {
+            if (err.message === 'Reaction blocked') return console.log(timeCode('error'), `${message.author.tag} has the bot blocked.`);
+            return console.log(timeCode('error'), 'error reacting to a message', err);
+        });
     }
 }

@@ -5,6 +5,13 @@ import { Config, Counter, Quote, User } from './mongo.js';
 export default function importData(path: string, deleteImportFile: boolean) {
     readFile(path, (error, data_) => {
         if (!data_ || error) return;
+        if (data_.byteLength === 0) return console.log(`${path} is an empty file and is not importable`);
+        try {
+            JSON.parse(data_.toString());
+        } catch (err) {
+            console.log(err);
+            return;
+        }
         const parsedData = JSON.parse(data_.toString());
         const keywords = [];
 

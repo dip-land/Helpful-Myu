@@ -1,7 +1,8 @@
 import { ApplicationCommandOptionType, type Channel } from 'discord.js';
 import { Command } from '../../structures/command.js';
-import { type ChannelConfigInterface, Config } from '../../handlers/database/mongo.js';
+import { type MessageFilterConfigInterface, Config } from '../../handlers/database/mongo.js';
 import { fetchChannelConfigs } from '../../handlers/messageFilter.js';
+import { timeCode } from '../../index.js';
 
 export default new Command({
     name: 'messagefilter',
@@ -156,16 +157,16 @@ export default new Command({
                     fetchChannelConfigs();
                 })
                 .catch((err: Error) => {
-                    console.log(err);
+                    console.log(timeCode('error'), err);
                     interaction.editReply('There was an error creating the config, please let shhh#7612 know about this.');
                 });
         } else if (options.getSubcommand() === 'update') {
             if (!existingConfig) return interaction.editReply('There is no config for the specified channel, use the add subcommand to create a config.');
-            const parsedEmojis = emojis ? emojis.split(/\s/g) : (existingConfig.data as ChannelConfigInterface).emojis;
-            const parsedUrls = allowedUrls ? allowedUrls.split(/\s/g) : (existingConfig.data as ChannelConfigInterface).allowedUrls;
-            const parsedMessages = messages ? JSON.parse(messages) : (existingConfig.data as ChannelConfigInterface).messages;
-            const maxMessages_ = maxMessages ? maxMessages : (existingConfig.data as ChannelConfigInterface).maxMessages;
-            const deleteAtMax_ = deleteAtMax ? deleteAtMax : (existingConfig.data as ChannelConfigInterface).deleteAtMax;
+            const parsedEmojis = emojis ? emojis.split(/\s/g) : (existingConfig.data as MessageFilterConfigInterface).emojis;
+            const parsedUrls = allowedUrls ? allowedUrls.split(/\s/g) : (existingConfig.data as MessageFilterConfigInterface).allowedUrls;
+            const parsedMessages = messages ? JSON.parse(messages) : (existingConfig.data as MessageFilterConfigInterface).messages;
+            const maxMessages_ = maxMessages ? maxMessages : (existingConfig.data as MessageFilterConfigInterface).maxMessages;
+            const deleteAtMax_ = deleteAtMax ? deleteAtMax : (existingConfig.data as MessageFilterConfigInterface).deleteAtMax;
             Config.updateOne(
                 { 'data.channel': channel.id },
                 {
@@ -186,7 +187,7 @@ export default new Command({
                     fetchChannelConfigs();
                 })
                 .catch((err: Error) => {
-                    console.log(err);
+                    console.log(timeCode('error'), err);
                     interaction.editReply('There was an error updating the config, please let shhh#7612 know about this.');
                 });
         } else if (options.getSubcommand() === 'remove') {
@@ -196,7 +197,7 @@ export default new Command({
                     interaction.editReply('Channel message filter config deleted.');
                 })
                 .catch((err: Error) => {
-                    console.log(err);
+                    console.log(timeCode('error'), err);
                     interaction.editReply('There was an error deleting the config, please let shhh#7612 know about this.');
                 });
         } else if (options.getSubcommand() === 'view') {
@@ -205,30 +206,28 @@ export default new Command({
             }
             const channels: Array<string> = [];
             for (const config of await Config.find({ type: 'channel' }).toArray()) {
-                channels.push((config.data as ChannelConfigInterface).channel);
+                channels.push((config.data as MessageFilterConfigInterface).channel);
             }
             interaction.editReply(`Here is a list of every channel with a config <#${channels.join('>, <#')}>`);
         }
     },
     async prefixCommand(message, args) {
-        let json = args.join('');
         try {
-            json = JSON.parse(json);
             Config.insertOne({
                 type: 'channel',
-                data: json,
+                data: JSON.parse(args.join('')),
             })
                 .then(() => {
                     message.reply('Channel message filter config created.');
                     fetchChannelConfigs();
                 })
                 .catch((err: Error) => {
-                    console.log(err);
+                    console.log(timeCode('error'), err);
                     message.reply('There was an error creating the config, please let shhh#7612 know about this.');
                 });
         } catch (err) {
             message.reply('Something went wrong...');
-            console.log(err);
+            console.log(timeCode('error'), err);
         }
     },
 });

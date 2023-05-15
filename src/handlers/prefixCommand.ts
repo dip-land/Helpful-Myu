@@ -1,24 +1,24 @@
 import { type Client, type Message, Collection } from 'discord.js';
 import type { Command } from '../structures/command.js';
+import { version, timeCode } from '../index.js';
 
 export default (message: Message, prefix: string, client: Client<boolean>) => {
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift()?.toLowerCase() as string;
     const command = client.legacyCommands.get(commandName) as Command;
 
-    if (!command) return;
+    if (!command || !command.prefixCommand) return;
     if (command.commandObject.disabled) return message.reply('This command is currently disabled.');
+    if (command?.commandObject?.beta && version !== 'beta') return;
     //cooldowns
-    if (!client.cooldowns.has(commandName)) {
-        client.cooldowns.set(commandName, new Collection());
-    }
+    if (!client.cooldowns.has(commandName)) client.cooldowns.set(commandName, new Collection());
     const now = Date.now();
     const timestamps = client.cooldowns.get(commandName);
-    const cooldownAmount = (command.commandObject.cooldown || 2) * 1000;
+    const cooldownAmount = (command.commandObject.cooldown || 2) * 1_000;
     if (timestamps.has(message.author.id)) {
         const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
         if (now < expirationTime) {
-            return message.reply(`Please wait ${((expirationTime - now) / 1000).toFixed(1)} more second(s) before reusing the \`${command.commandObject.name}\` command.`);
+            return message.reply(`Please wait ${((expirationTime - now) / 1_000).toFixed(1)} more second(s) before reusing the \`${command.commandObject.name}\` command.`);
         }
     }
     timestamps.set(message.author.id, now);
@@ -33,6 +33,6 @@ export default (message: Message, prefix: string, client: Client<boolean>) => {
     try {
         command.prefixCommand(message, args);
     } catch (err: Error | unknown) {
-        console.log(err);
+        console.log(timeCode('error'), err);
     }
 };

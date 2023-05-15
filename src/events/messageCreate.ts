@@ -3,6 +3,7 @@ import prefixCommand from '../handlers/prefixCommand.js';
 import { Config } from '../handlers/database/mongo.js';
 import messageFilter from '../handlers/messageFilter.js';
 import { Event } from '../structures/event.js';
+import { version } from '../index.js';
 
 let prefixes = await Config.find({ type: 'prefix' }).toArray();
 export async function fetchPrefixes() {
@@ -12,9 +13,10 @@ export async function fetchPrefixes() {
 export default new Event({
     name: 'messageCreate',
     async fn(message: Message<boolean>) {
+        const channel = message.channel;
         if (message.author.bot) return;
-        if (message.member?.displayName.toLowerCase().includes('mouse') && Math.ceil(Math.random() * 49) === 42) message.channel.send('🧀');
-        if (message.content.toLowerCase().includes('stfu')) message.channel.send('slice the fudge, uwuu~ <3');
+        if (version === 'hm' && message.member?.displayName.toLowerCase().includes('mouse') && Math.ceil(Math.random() * 49) === 42 && channel.type === 0) channel.send('🧀');
+        if (message.content.toLowerCase().includes('stfu') && channel.type === 0) channel.send('slice the fudge, uwuu~ <3');
         messageFilter(message);
 
         if (!prefixes[0]) prefixes.push({ _id: null, type: 'prefix', data: 'hm!' });

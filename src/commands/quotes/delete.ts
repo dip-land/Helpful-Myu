@@ -1,7 +1,7 @@
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Command } from '../../structures/command.js';
 import { Quote, QuoteDeleted, type QuoteInterface } from '../../handlers/database/mongo.js';
-import { embedColor } from '../../index.js';
+import { embedColor, timeCode } from '../../index.js';
 
 export default new Command({
     name: 'quotedelete',
@@ -36,7 +36,7 @@ export default new Command({
                         title: 'Do you wanna compost this quote, myaa?',
                         description: `**ID:** ${quote.id}\n**Keyword:** ${quote.keyword}\n**Text:** ${quote.text}\n**Created By:** ${createdBy.tag} (${
                             createdBy.id
-                        })\n**Created At:** <t:${Math.floor(quote.createdAt.getTime() / 1000)}:F>\n`,
+                        })\n**Created At:** <t:${Math.floor(quote.createdAt.getTime() / 1_000)}:F>\n`,
                         timestamp: new Date().toISOString(),
                         footer: {
                             text: `Requested by ${interaction.user.tag}`,
@@ -65,7 +65,7 @@ export default new Command({
                 ],
             });
         } catch (err: Error | unknown) {
-            console.log(err);
+            console.log(timeCode('error'), err);
         }
     },
     async prefixCommand(message, args) {
@@ -83,7 +83,7 @@ export default new Command({
                     title: 'Do you wanna compost this quote, myaa?',
                     description: `**ID:** ${quote.id}\n**Keyword:** ${quote.keyword}\n**Text:** ${quote.text}\n**Created By:** ${createdBy.tag} (${
                         createdBy.id
-                    })\n**Created At:** <t:${Math.floor(quote.createdAt.getTime() / 1000)}:F>\n`,
+                    })\n**Created At:** <t:${Math.floor(quote.createdAt.getTime() / 1_000)}:F>\n`,
                     timestamp: new Date().toISOString(),
                     footer: {
                         text: `Requested by ${message.author.tag}`,

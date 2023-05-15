@@ -1,6 +1,7 @@
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Command } from '../../structures/command.js';
 import { Quote, QuoteCreated } from '../../handlers/database/mongo.js';
+import { timeCode } from '../../index.js';
 
 export default new Command({
     name: 'quoteadd',
@@ -40,8 +41,8 @@ export default new Command({
                     }
                 });
             });
-        } catch (error) {
-            console.log(error);
+        } catch (err) {
+            console.log(timeCode('error'), err);
         }
     },
     async prefixCommand(message, args) {

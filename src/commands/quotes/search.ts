@@ -1,7 +1,7 @@
 import { type APIEmbed, type APIEmbedImage, ApplicationCommandOptionType, type Client, type User } from 'discord.js';
 import { Command } from '../../structures/command.js';
 import { Quote, type QuoteInterface } from '../../handlers/database/mongo.js';
-import { embedColor } from '../../index.js';
+import { embedColor, timeCode } from '../../index.js';
 
 export default new Command({
     name: 'quotesearch',
@@ -53,7 +53,7 @@ export default new Command({
                 ],
             });
         } catch (err: Error | unknown) {
-            console.log(err);
+            console.log(timeCode('error'), err);
         }
     },
     async prefixCommand(message, args) {
@@ -120,7 +120,7 @@ async function makeEmbed(quote: QuoteInterface, user: User, client: Client): Pro
         color: embedColor,
         title: `Quote ${quote.id}`,
         description: `**Keyword:** ${quote.keyword}\n**Text:** ${quote.text}\n**Created By:** ${createdBy.tag} (${createdBy.id}) <t:${Math.floor(
-            quote.createdAt.getTime() / 1000
+            quote.createdAt.getTime() / 1_000
         )}:R>\n`,
         image,
         timestamp: new Date().toISOString(),

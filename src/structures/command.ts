@@ -1,19 +1,32 @@
-import type { ButtonInteraction, ChatInputApplicationCommandData, ChatInputCommandInteraction, Message, PermissionResolvable, AnySelectMenuInteraction } from 'discord.js';
+import type {
+    ButtonInteraction,
+    ChatInputApplicationCommandData,
+    ChatInputCommandInteraction,
+    Message,
+    PermissionResolvable,
+    AnySelectMenuInteraction,
+    ModalSubmitInteraction,
+    Collection,
+    TextInputComponent,
+} from 'discord.js';
 
 export class Command {
-    #name = '';
-    #description = '';
-    #options?: ChatInputApplicationCommandData['options'] = [];
-    #aliases: Array<string> = [];
-    #category: CommandCategories = '';
-    #cooldown?: number = 5;
-    #disabled?: boolean = false;
-    #default_member_permissions?: string;
-    #permissions?: Array<PermissionResolvable> = [];
-    #prefixCommand?: (message: Message, args: Array<string>) => Promise<unknown>;
-    #slashCommand?: (interaction: ChatInputCommandInteraction, options: ChatInputCommandInteraction['options']) => Promise<unknown>;
-    #button?: (interaction: ButtonInteraction, message: undefined | Message, args: Array<string>) => Promise<unknown>;
-    #selectMenu?: (interaction: AnySelectMenuInteraction, message: undefined | Message, args: Array<string>) => Promise<unknown>;
+    #name: CommandObject['name'] = '';
+    #description: CommandObject['description'] = '';
+    #options?: CommandObject['options'] = [];
+    #aliases: CommandObject['aliases'] = [];
+    #category: CommandObject['category'] = '';
+    #cooldown?: CommandObject['cooldown'] = 5;
+    #disabled?: CommandObject['disabled'] = false;
+    #beta?: CommandObject['beta'] = false;
+    #defered?: CommandObject['defered'] = true;
+    #default_member_permissions?: CommandObject['default_member_permissions'];
+    #permissions?: CommandObject['permissions'] = [];
+    #prefixCommand?: CommandObject['prefixCommand'];
+    #slashCommand?: CommandObject['slashCommand'];
+    #button?: CommandObject['button'];
+    #selectMenu?: CommandObject['selectMenu'];
+    #modal?: CommandObject['modal'];
     constructor(options: CommandObject) {
         this.#name = options.name;
         this.#description = options.description;
@@ -22,12 +35,15 @@ export class Command {
         this.#category = options.category;
         this.#cooldown = options.cooldown;
         this.#disabled = options.disabled;
+        this.#beta = options.beta;
+        this.#defered = options.defered || true;
         this.#default_member_permissions = options.default_member_permissions;
         this.#permissions = options.permissions;
         this.#prefixCommand = options.prefixCommand;
         this.#slashCommand = options.slashCommand;
         this.#button = options.button;
         this.#selectMenu = options.selectMenu;
+        this.#modal = options.modal;
     }
 
     public get applicationData(): ApplicationData {
@@ -48,35 +64,39 @@ export class Command {
             category: this.#category,
             cooldown: this.#cooldown,
             disabled: this.#disabled,
+            beta: this.#beta,
+            defered: this.#defered,
             permissions: this.#permissions,
             prefixCommand: this.#prefixCommand,
             slashCommand: this.#slashCommand,
             button: this.#button,
             selectMenu: this.#selectMenu,
+            modal: this.#modal,
         };
     }
 
-    public get prefixCommand(): (message: Message, args: Array<string>) => Promise<unknown> {
-        return this.#prefixCommand as (message: Message<boolean>, args: string[]) => Promise<unknown>;
+    public get prefixCommand(): CommandObject['prefixCommand'] {
+        return this.#prefixCommand as CommandObject['prefixCommand'];
     }
-    public get slashCommand(): (interaction: ChatInputCommandInteraction, options: ChatInputCommandInteraction['options']) => Promise<unknown> {
-        return this.#slashCommand as (interaction: ChatInputCommandInteraction, options: ChatInputCommandInteraction['options']) => Promise<unknown>;
+    public get slashCommand(): CommandObject['slashCommand'] {
+        return this.#slashCommand as CommandObject['slashCommand'];
     }
-    public get button(): (interaction: ButtonInteraction, message: undefined | Message, args: Array<string>) => Promise<unknown> {
-        return this.#button as (interaction: ButtonInteraction, message: undefined | Message, args: Array<string>) => Promise<unknown>;
+    public get button(): CommandObject['button'] {
+        return this.#button as CommandObject['button'];
     }
-    public get selectMenu(): (interaction: AnySelectMenuInteraction, message: undefined | Message, args: Array<string>) => Promise<unknown> {
-        return this.#selectMenu as (interaction: AnySelectMenuInteraction, message: undefined | Message, args: Array<string>) => Promise<unknown>;
+    public get selectMenu(): CommandObject['selectMenu'] {
+        return this.#selectMenu as CommandObject['selectMenu'];
+    }
+    public get modal(): CommandObject['modal'] {
+        return this.#modal as CommandObject['modal'];
     }
 }
 
-export type CommandCategories = '' | 'config' | 'music' | 'quotes' | 'roleplay' | 'utility';
-
 export type ApplicationData = {
-    name: string;
-    description: string;
-    options: ChatInputApplicationCommandData['options'];
-    default_member_permissions: string | undefined;
+    name: CommandObject['name'];
+    description: CommandObject['description'];
+    options: CommandObject['options'];
+    default_member_permissions: CommandObject['default_member_permissions'];
 };
 
 export type CommandObject = {
@@ -84,13 +104,16 @@ export type CommandObject = {
     description: string;
     options?: ChatInputApplicationCommandData['options'];
     aliases: Array<string>;
-    category: CommandCategories;
+    category: '' | 'config' | 'music' | 'quotes' | 'roleplay' | 'utility';
     cooldown?: number;
     disabled?: boolean;
+    beta?: boolean;
+    defered?: boolean;
     default_member_permissions?: string;
     permissions?: Array<PermissionResolvable>;
     prefixCommand?: (message: Message, args: Array<string>) => Promise<unknown>;
     slashCommand?: (interaction: ChatInputCommandInteraction, options: ChatInputCommandInteraction['options']) => Promise<unknown>;
     button?: (interaction: ButtonInteraction, message: undefined | Message, args: Array<string>) => Promise<unknown>;
     selectMenu?: (interaction: AnySelectMenuInteraction, message: undefined | Message, args: Array<string>) => Promise<unknown>;
+    modal?: (interaction: ModalSubmitInteraction, fields: Collection<string, TextInputComponent>) => Promise<unknown>;
 };
