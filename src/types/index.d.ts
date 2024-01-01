@@ -1,11 +1,7 @@
-import type { Collection } from 'discord.js';
-import type { Command } from '../structures/command.js';
-declare module 'discord.js' {
-    interface Client {
-        cooldowns: Collection<string, any>;
-        legacyCommands: Collection<string, Command>;
-    }
+import type { VoiceState } from 'discord.js';
+import type { Client as customClient } from '../classes/Client';
 
+declare module 'discord.js' {
     interface APIInteractionGuildMember {
         voice: VoiceState;
     }

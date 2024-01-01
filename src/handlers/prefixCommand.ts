@@ -1,38 +1,28 @@
-import { type Client, type Message, Collection } from 'discord.js';
-import type { Command } from '../structures/command.js';
-import { version, timeCode } from '../index.js';
+import type { Collection, Message } from 'discord.js';
+import { client } from '../index.js';
 
-export default (message: Message, prefix: string, client: Client<boolean>) => {
-    const args = message.content.slice(prefix.length).trim().split(/ +/);
-    const commandName = args.shift()?.toLowerCase() as string;
-    const command = client.legacyCommands.get(commandName) as Command;
+export default (message: Message, prefix: string) => {
+    const args = message.content.slice(prefix.length).split(/\s+(?=(?:[^"]*"[^"]*")*[^"]*$)/g);
+    const cmd = client.prefixCommands.get(args.shift()?.toLowerCase() as string);
+    if (!cmd || !cmd.prefixCommand || !message.channel.isTextBased() || message.channel.isDMBased() || message.channel.isThread()) return message.reply('Command unavailable.');
+    if (client.isShhh(message.author)) return cmd.prefixCommand({ message, args, client });
+    if (cmd.disabled) return message.reply('This command is disabled, it may be re-enabled in the future.');
+    if (cmd.nsfw && !message.channel.nsfw) return message.reply('This command cannot be used here.');
 
-    if (!command || !command.prefixCommand) return;
-    if (command.commandObject.disabled) return message.reply('This command is currently disabled.');
-    if (command?.commandObject?.beta && version !== 'beta') return;
-    //cooldowns
-    if (!client.cooldowns.has(commandName)) client.cooldowns.set(commandName, new Collection());
+    const timestamps = client.cooldowns.get(cmd.name) as Collection<string, number>;
     const now = Date.now();
-    const timestamps = client.cooldowns.get(commandName);
-    const cooldownAmount = (command.commandObject.cooldown || 2) * 1_000;
     if (timestamps.has(message.author.id)) {
-        const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
-        if (now < expirationTime) {
-            return message.reply(`Please wait ${((expirationTime - now) / 1_000).toFixed(1)} more second(s) before reusing the \`${command.commandObject.name}\` command.`);
-        }
+        const expire = (timestamps.get(message.author.id) as number) + cmd.cooldown;
+        if (now < expire) return message.reply(`Please wait \`${(expire - now) / 1_000}\` seconds before reusing the \`${cmd.name}\` command.`);
     }
     timestamps.set(message.author.id, now);
-    setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+    setTimeout(() => timestamps.delete(message.author.id), cmd.cooldown);
 
-    if (command.commandObject.permissions && message.author.id !== '439039443744063488') {
-        for (const permission of command.commandObject.permissions) {
+    if (cmd.permissions) {
+        for (const permission of cmd.permissions) {
             if (!message.member?.permissions.has(permission)) return message.reply('You seem to be missing permissions to use this command.');
         }
     }
 
-    try {
-        command.prefixCommand(message, args);
-    } catch (err: Error | unknown) {
-        console.log(timeCode('error'), err);
-    }
+    cmd.prefixCommand({ message, args, client }).catch((err) => client.error(err));
 };
